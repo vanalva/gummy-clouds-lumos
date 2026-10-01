@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teeth and Mouth — Gummy Clouds</title>
-    <meta name="description" content="Read 'Teeth and Mouth' — an interactive dental health book for kids. Download PDF, listen to audio, and explore more books on Gummy Clouds.">
-    <meta property="og:title" content="Teeth and Mouth — Gummy Clouds">
-    <meta property="og:description" content="Read 'Teeth and Mouth' — an interactive dental health book for kids. Download PDF, listen to audio, and explore more books on Gummy Clouds.">
+    <title>Join the waitlist — Gummy Clouds</title>
+    <meta name="description" content="Gummy Clouds is launching soon. Join the waitlist for early access to brushing timers, cloud buddies and gummy star rewards, and invite friends to move up the list.">
+    <meta property="og:title" content="Join the waitlist — Gummy Clouds">
+    <meta property="og:description" content="Gummy Clouds is launching soon. Join the waitlist for early access to brushing timers, cloud buddies and gummy star rewards, and invite friends to move up the list.">
     <meta property="og:image" content="assets/og-image.png">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
@@ -25,9 +25,9 @@
 
 
 <!-- ════════════════════════════════════════════════════════════════════════
-     NAVBAR — Yellow accent strip variant
+     NAVBAR
      ════════════════════════════════════════════════════════════════════════ -->
-<div class="nav_section is-accent">
+<div class="nav_section">
     <nav class="nav_component" role="navigation" aria-label="Main navigation">
         <div class="nav_pill u-flex-horizontal">
             <a href="index.html" class="nav_logo_link" aria-label="Gummy Clouds — Home">
@@ -89,163 +89,89 @@
 
 
 <!-- ════════════════════════════════════════════════════════════════════════
-     S1: BOOK READER — Large illustration with reading text + progress
+     WAITLIST — Split layout (form state + "your spot" state)
      ════════════════════════════════════════════════════════════════════════ -->
-<section class="u-section u-padding-top-main u-padding-bottom-small">
-    <div class="u-container u-flex-vertical u-gap-5">
+<div class="auth_layout">
 
-        <!-- Book reader area -->
-        <div class="book_reader">
-            <!-- Main illustration / reading view -->
-            <div class="book_reader_media">
-                <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=1200&h=700&fit=crop" alt="Book illustration — Teeth and Mouth reading view" class="book_reader_image" loading="eager" width="1200" height="700">
+    <!-- Left panel: purple with logo + Gummy character -->
+    <div class="auth_panel auth_panel--secondary u-position-relative">
+        <img src="assets/logo-imagotype-fullcolor.svg" alt="Gummy Clouds" class="auth_panel_logo" loading="eager">
+        <img src="assets/characters/gummy-walking-happy.svg" alt="" class="auth_panel_character" aria-hidden="true">
+        <img src="assets/shapes/yellow/clover.svg" alt="" class="auth_panel_cloud auth_panel_cloud--1" aria-hidden="true">
+        <img src="assets/shapes/pink/clover.svg" alt="" class="auth_panel_cloud auth_panel_cloud--2" aria-hidden="true">
+        <img src="assets/shapes/yellow/clover.svg" alt="" class="auth_panel_cloud auth_panel_cloud--3" aria-hidden="true">
+    </div>
+
+    <!-- Right side -->
+    <div class="auth_form_wrap">
+
+        <!-- State 1: join form -->
+        <div class="auth_form_card waitlist_state" data-waitlist-form-state>
+            <div class="u-flex-vertical u-gap-2">
+                <span class="waitlist_badge">Launching soon</span>
+                <h1 class="c-heading c-heading-display auth_heading" data-style="h3">Join the waitlist</h1>
+                <p class="c-paragraph u-text-style-main auth_subtitle">Be one of the first families to try Gummy Clouds. Invite friends to move up the list.</p>
             </div>
 
-            <!-- Reading text overlay area -->
-            <div class="book_reader_text">
-                <p class="c-paragraph u-text-style-main">Once upon a time, in a land made of fluffy clouds and sparkling raindrops, there lived a little cloud named Buddy. Buddy had the brightest smile in all of Cloud Town, and do you know why? Because Buddy brushed every single morning and every single night!</p>
-                <p class="c-paragraph u-text-style-main">"Good morning, teeth!" Buddy would say, picking up a tiny toothbrush covered in sparkly paste. First the front teeth, then the back, round and round in gentle circles. "Don't forget the tongue!" Buddy giggled, giving it a soft brush too. All the other clouds wanted smiles just as bright as Buddy's.</p>
-            </div>
+            <p class="waitlist_ref_note" data-waitlist-ref-note hidden>A friend invited you. Joining moves them up the list too.</p>
 
-            <!-- Progress bar -->
-            <div class="book_reader_progress">
-                <p class="c-paragraph u-text-style-small book_reader_progress_label">Progress</p>
-                <div class="book_reader_progress_track">
-                    <div class="book_reader_progress_fill" style="width: 70%"></div>
+            <form class="auth_form_fields" data-waitlist-form novalidate>
+                <div>
+                    <label for="waitlist-name" class="auth_label">First name</label>
+                    <input type="text" id="waitlist-name" name="first_name" class="auth_input" placeholder="Your first name" required autocomplete="given-name" maxlength="60">
                 </div>
-                <p class="c-paragraph u-text-style-small book_reader_progress_pct">70%</p>
-            </div>
+                <div>
+                    <label for="waitlist-email" class="auth_label">Email</label>
+                    <input type="email" id="waitlist-email" name="email" class="auth_input" placeholder="you@example.com" required autocomplete="email" maxlength="120">
+                </div>
+                <fieldset class="waitlist_roles">
+                    <legend class="auth_label">I'm a…</legend>
+                    <div class="waitlist_role_list">
+                        <label class="waitlist_role"><input type="radio" name="role" value="parent" class="waitlist_role_input" checked><span class="waitlist_role_pill">Parent</span></label>
+                        <label class="waitlist_role"><input type="radio" name="role" value="dentist" class="waitlist_role_input"><span class="waitlist_role_pill">Dentist</span></label>
+                        <label class="waitlist_role"><input type="radio" name="role" value="school" class="waitlist_role_input"><span class="waitlist_role_pill">School</span></label>
+                    </div>
+                </fieldset>
+                <div class="waitlist_trap" aria-hidden="true">
+                    <label for="waitlist-website">Website</label>
+                    <input type="text" id="waitlist-website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+                <p class="waitlist_error" data-waitlist-error role="alert" hidden></p>
+                <button type="submit" class="c-button auth_button_full" data-waitlist-submit>Join the waitlist</button>
+                <p class="c-paragraph u-text-style-small waitlist_fineprint">We'll only email you about the launch. Read our <a href="privacy.html" class="auth_link">Privacy Policy</a>.</p>
+            </form>
         </div>
 
-        <!-- Action buttons row -->
-        <div class="book_actions u-flex-horizontal u-gap-3">
-            <a href="#" class="c-button-accent">Download PDF</a>
-            <a href="#" class="c-button-accent">Read</a>
-            <a href="#" class="c-button-accent">Play audio</a>
-
-            <!-- Playback controls -->
-            <div class="book_actions_controls u-flex-horizontal u-gap-2">
-                <button class="media_player_btn book_control_btn" aria-label="Play">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                </button>
-                <button class="media_player_btn book_control_btn" aria-label="Volume">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                </button>
+        <!-- State 2: your spot -->
+        <div class="auth_form_card waitlist_state is-hidden" data-waitlist-done-state>
+            <div class="u-flex-vertical u-gap-2">
+                <span class="waitlist_badge">You're in, <span data-waitlist-name>friend</span>!</span>
+                <p class="c-paragraph u-text-style-main auth_subtitle">Your spot on the list</p>
+                <p class="waitlist_position" data-waitlist-position>#1,287</p>
+                <p class="c-paragraph u-text-style-main auth_subtitle">We'll email <strong data-waitlist-email>you</strong> when it's your turn.</p>
             </div>
+
+            <div class="waitlist_share">
+                <h2 class="c-heading waitlist_share_title" data-style="h6">Move up the list</h2>
+                <p class="c-paragraph u-text-style-small">Every friend who joins with your link moves you up 5 spots.</p>
+                <div class="waitlist_link_row">
+                    <input type="text" id="waitlist-link" class="auth_input waitlist_link_input" data-waitlist-link readonly aria-label="Your invite link">
+                    <button type="button" class="c-button-secondary waitlist_copy" data-waitlist-copy>Copy</button>
+                </div>
+                <div class="waitlist_share_list">
+                    <a href="#" class="c-button-secondary waitlist_share_button" data-waitlist-share="whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+                    <a href="#" class="c-button-secondary waitlist_share_button" data-waitlist-share="email">Email</a>
+                    <a href="#" class="c-button-secondary waitlist_share_button" data-waitlist-share="x" target="_blank" rel="noopener">X</a>
+                </div>
+                <p class="c-paragraph u-text-style-small waitlist_invites"><span data-waitlist-invites>0</span> friends joined so far</p>
+            </div>
+
+            <p class="c-paragraph u-text-style-small u-text-align-center">Not you? <button type="button" class="waitlist_reset" data-waitlist-reset>Use a different email</button></p>
         </div>
 
     </div>
-</section>
 
-
-<!-- ════════════════════════════════════════════════════════════════════════
-     S2: AUDIO PLAYER BAR
-     ════════════════════════════════════════════════════════════════════════ -->
-<section class="u-section u-padding-bottom-small">
-    <div class="u-container">
-        <div class="media_player u-flex-horizontal u-gap-3">
-            <button class="media_player_btn" aria-label="Play">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            </button>
-            <div class="media_player_track u-flex-grow">
-                <div class="media_player_fill" style="width: 35%"></div>
-            </div>
-            <p class="c-paragraph u-text-style-small media_player_time">1:24 / 4:02</p>
-            <button class="media_player_btn" aria-label="Volume">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-            </button>
-        </div>
-    </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════════════════════════════════
-     S3: ABOUT THE BOOK — Display heading left, metadata + text right
-     ════════════════════════════════════════════════════════════════════════ -->
-<section class="u-section u-padding-top-main u-padding-bottom-main">
-    <div class="u-container">
-        <div class="book_about_layout">
-
-            <!-- Left: Display heading -->
-            <div class="book_about_heading">
-                <h1 class="c-heading c-heading-display" data-style="h2">About the book</h1>
-            </div>
-
-            <!-- Right: Metadata + description + actions -->
-            <div class="book_about_content u-flex-vertical u-gap-4">
-                <h2 class="c-heading" data-style="h4">Teeth and Mouth</h2>
-
-                <!-- Metadata row -->
-                <div class="book_meta u-flex-horizontal u-gap-4">
-                    <p class="c-paragraph u-text-style-small book_meta_item">+6</p>
-                    <p class="c-paragraph u-text-style-small book_meta_item">2h 38m</p>
-                </div>
-
-                <!-- Description -->
-                <p class="c-paragraph u-text-style-main">Join Cloud Buddy on an adventure through Tooth Town! This interactive story teaches children about dental hygiene through colorful illustrations and engaging characters. Recommended for ages 3-7.</p>
-
-                <!-- Action buttons -->
-                <div class="u-flex-horizontal u-gap-3">
-                    <a href="#" class="c-button-accent">Save book</a>
-                    <a href="#" class="c-button-secondary">Favorites</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════════════════════════════════
-     S4: OTHER BOOKS — 3 photo cards with navigation arrows
-     ════════════════════════════════════════════════════════════════════════ -->
-<section class="u-section u-padding-top-none u-padding-bottom-main">
-    <div class="u-container u-flex-vertical u-gap-6">
-
-        <!-- Section header -->
-        <h2 class="c-heading c-heading-display" data-style="h3">Other Books</h2>
-
-        <!-- Book cards grid -->
-        <div class="u-grid-3 u-gap-5">
-
-            <!-- Card 1 -->
-            <a href="book.html" class="video_card u-flex-vertical u-gap-3">
-                <div class="photo_block">
-                    <img src="https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=400&h=300&fit=crop" alt="Book — Learn how to brush" class="photo_block_image" loading="lazy" width="400" height="300">
-                </div>
-                <p class="c-paragraph u-text-style-main video_card_title">Learn how to</p>
-            </a>
-
-            <!-- Card 2 -->
-            <a href="book.html" class="video_card u-flex-vertical u-gap-3">
-                <div class="photo_block">
-                    <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=300&fit=crop" alt="Book — Learn how to floss" class="photo_block_image" loading="lazy" width="400" height="300">
-                </div>
-                <p class="c-paragraph u-text-style-main video_card_title">Learn how to</p>
-            </a>
-
-            <!-- Card 3 -->
-            <a href="book.html" class="video_card u-flex-vertical u-gap-3">
-                <div class="photo_block">
-                    <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=400&h=300&fit=crop" alt="Book — Learn how to care" class="photo_block_image" loading="lazy" width="400" height="300">
-                </div>
-                <p class="c-paragraph u-text-style-main video_card_title">Learn how to</p>
-            </a>
-
-        </div>
-
-        <!-- Carousel arrows -->
-        <div class="u-flex-horizontal u-gap-2">
-            <button class="c-button-arrow" aria-label="Previous">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            </button>
-            <button class="c-button-arrow" aria-label="Next">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </button>
-        </div>
-
-    </div>
-</section>
+</div>
 
 
 </main>
@@ -304,9 +230,6 @@
 
 </div>
 
-<script src="components/navbar/navbar.js"></script>
-<script src="js/carousel.js?v=3739dfb4"></script>
-
 <!-- Cookie Banner -->
 <div class="cookie_banner" data-cookie-banner>
     <div class="cookie_banner_inner">
@@ -322,5 +245,7 @@
     </div>
 </div>
 <script src="components/cookie-banner/cookie-banner.js"></script>
+<script src="components/navbar/navbar.js"></script>
+<script src="js/waitlist.js?v=b531fe60"></script>
 </body>
 </html>

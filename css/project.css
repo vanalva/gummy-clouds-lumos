@@ -1275,7 +1275,7 @@
 .notif_bar_close:hover { opacity: 1; }
 
 @media (max-width: 767px) {
-  .notif_bar_link { display: none; }
+  .notif_bar_text { display: none; }
 }
 
 .pricing_toggle { display: inline-flex; align-items: center; background-color: var(--_theme---background); border-top-left-radius: var(--radius--button); border-top-right-radius: var(--radius--button); border-bottom-left-radius: var(--radius--button); border-bottom-right-radius: var(--radius--button); border-top-width: var(--border-width--main); border-right-width: var(--border-width--main); border-bottom-width: var(--border-width--main); border-left-width: var(--border-width--main); border-style: solid; border-top-color: var(--swatch--dark-900); border-right-color: var(--swatch--dark-900); border-bottom-color: var(--swatch--dark-900); border-left-color: var(--swatch--dark-900); padding-top: var(--_spacing---space--1); padding-right: var(--_spacing---space--1); padding-bottom: var(--_spacing---space--1); padding-left: var(--_spacing---space--1); column-gap: var(--_spacing---space--1); }
@@ -1393,3 +1393,57 @@
 .gc-preloader_dot:nth-child(2) { animation-delay: 0.2s; background-color: var(--swatch--brand-500-secondary); }
 
 .gc-preloader_dot:nth-child(3) { animation-delay: 0.4s; background-color: var(--swatch--accent-500); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   WAITLIST (pages/waitlist.html + js/waitlist.js)
+   ════════════════════════════════════════════════════════════════════════ */
+.waitlist_state.is-hidden { display: none; }
+
+.waitlist_badge { display: inline-block; align-self: center; padding-top: var(--_spacing---space--1); padding-right: var(--_spacing---space--3); padding-bottom: var(--_spacing---space--1); padding-left: var(--_spacing---space--3); background-color: var(--swatch--accent-500); color: var(--swatch--dark-900); font-family: var(--font--primary-family), sans-serif; font-weight: var(--font--primary-bold); font-size: var(--font-size--text-small); border-top-left-radius: var(--radius--round); border-top-right-radius: var(--radius--round); border-bottom-left-radius: var(--radius--round); border-bottom-right-radius: var(--radius--round); border-top-width: var(--border-width--main); border-right-width: var(--border-width--main); border-bottom-width: var(--border-width--main); border-left-width: var(--border-width--main); border-style: solid; border-top-color: var(--swatch--dark-900); border-right-color: var(--swatch--dark-900); border-bottom-color: var(--swatch--dark-900); border-left-color: var(--swatch--dark-900); }
+
+.waitlist_ref_note { margin-top: 0px; margin-bottom: 0px; padding-top: var(--_spacing---space--3); padding-right: var(--_spacing---space--4); padding-bottom: var(--_spacing---space--3); padding-left: var(--_spacing---space--4); background-color: var(--swatch--accent-300); font-family: var(--font--primary-family), sans-serif; font-size: var(--font-size--text-small); text-align: center; color: var(--swatch--dark-900); border-top-left-radius: var(--radius--small); border-top-right-radius: var(--radius--small); border-bottom-left-radius: var(--radius--small); border-bottom-right-radius: var(--radius--small); }
+
+.waitlist_roles { margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; min-width: 0px; }
+
+.waitlist_role_list { display: flex; flex-direction: row; flex-wrap: wrap; column-gap: var(--_spacing---space--2); row-gap: var(--_spacing---space--2); }
+
+.waitlist_role { position: relative; cursor: pointer; }
+
+.waitlist_role_input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+.waitlist_role_pill { display: inline-flex; align-items: center; padding-top: var(--_spacing---space--2); padding-right: var(--_spacing---space--4); padding-bottom: var(--_spacing---space--2); padding-left: var(--_spacing---space--4); background-color: var(--swatch--light-bright); color: var(--swatch--dark-900); font-family: var(--font--primary-family), sans-serif; font-weight: var(--font--primary-medium); font-size: var(--font-size--text-small); border-top-left-radius: var(--radius--round); border-top-right-radius: var(--radius--round); border-bottom-left-radius: var(--radius--round); border-bottom-right-radius: var(--radius--round); border-top-width: var(--border-width--main); border-right-width: var(--border-width--main); border-bottom-width: var(--border-width--main); border-left-width: var(--border-width--main); border-style: solid; border-top-color: var(--swatch--dark-900); border-right-color: var(--swatch--dark-900); border-bottom-color: var(--swatch--dark-900); border-left-color: var(--swatch--dark-900); transition-property: background-color, color; transition-duration: 0.2s; transition-timing-function: ease; transition-delay: 0s; }
+
+.waitlist_role_input:checked + .waitlist_role_pill { background-color: var(--swatch--brand-500-secondary); color: var(--swatch--light-bright); }
+
+.waitlist_role_input:focus-visible + .waitlist_role_pill { outline-width: 3px; outline-style: solid; outline-color: var(--swatch--accent-500); outline-offset: 2px; }
+
+.waitlist_trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.waitlist_error { margin-top: 0px; margin-bottom: 0px; font-family: var(--font--primary-family), sans-serif; font-weight: var(--font--primary-bold); font-size: var(--font-size--text-small); color: var(--swatch--brand-500); }
+
+.waitlist_fineprint { text-align: center; opacity: 0.7; }
+
+.waitlist_position { margin-top: 0px; margin-bottom: 0px; font-family: var(--font--display-family), sans-serif; font-weight: var(--font--display-medium); font-size: var(--font-size--display); line-height: 1; text-align: center; color: var(--swatch--brand-500-secondary); }
+
+.waitlist_share { display: flex; flex-direction: column; row-gap: var(--_spacing---space--3); padding-top: var(--_spacing---space--5); padding-right: var(--_spacing---space--5); padding-bottom: var(--_spacing---space--5); padding-left: var(--_spacing---space--5); background-color: var(--swatch--light-bright); border-top-left-radius: var(--radius--main); border-top-right-radius: var(--radius--main); border-bottom-left-radius: var(--radius--main); border-bottom-right-radius: var(--radius--main); border-top-width: var(--border-width--main); border-right-width: var(--border-width--main); border-bottom-width: var(--border-width--main); border-left-width: var(--border-width--main); border-style: solid; border-top-color: var(--swatch--dark-900); border-right-color: var(--swatch--dark-900); border-bottom-color: var(--swatch--dark-900); border-left-color: var(--swatch--dark-900); }
+
+.waitlist_share_title { margin-top: 0px; margin-bottom: 0px; }
+
+.waitlist_link_row { display: flex; flex-direction: row; column-gap: var(--_spacing---space--2); }
+
+.waitlist_link_input { flex-grow: 1; flex-shrink: 1; flex-basis: 0%; min-width: 0px; font-size: var(--font-size--text-small); }
+
+.waitlist_copy { flex-shrink: 0; }
+
+.waitlist_share_list { display: flex; flex-direction: row; flex-wrap: wrap; column-gap: var(--_spacing---space--2); row-gap: var(--_spacing---space--2); }
+
+.waitlist_share_button { flex-grow: 1; flex-shrink: 1; flex-basis: 0%; justify-content: center; }
+
+.waitlist_invites { opacity: 0.7; }
+
+.waitlist_reset { padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; background-color: transparent; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; font-family: var(--font--primary-family), sans-serif; font-size: var(--font-size--text-small); font-weight: var(--font--primary-medium); color: var(--swatch--brand-500-secondary); text-decoration-line: underline; cursor: pointer; }
+
+@media (max-width: 478px) {
+  .waitlist_link_row { flex-direction: column; row-gap: var(--_spacing---space--2); }
+  .waitlist_share_button { flex-basis: 100%; }
+}
