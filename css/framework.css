@@ -1,0 +1,569 @@
+/* ═══════════════════════════════════════════
+   Gummy Clouds — LUMOS Framework Base
+   DO NOT EDIT — This is the framework reset + utilities.
+   Add custom classes to project.css instead.
+   ═══════════════════════════════════════════ */
+
+
+/* ==========================================================================
+   CSS Embed: Box Model Reset + Tag Resets
+   (These use relational/bare-tag selectors → must go in CSS embed in Webflow)
+   ========================================================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+}
+
+html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    background-color: var(--_theme---background);
+    font-family: var(--font--primary-family), sans-serif;
+    color: var(--_theme---text);
+    font-size: var(--font-size--text-main);
+    line-height: var(--line-height--large);
+    font-weight: var(--font--primary-regular);
+    letter-spacing: var(--letter-spacing--normal);
+}
+
+img {
+    max-width: 100%;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+a {
+    color: inherit;
+    outline-width: var(--focus--width);
+    outline-offset: var(--focus--offset-outer);
+    text-decoration-line: none;
+}
+
+ul, ol {
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+li {
+    display: block;
+}
+
+strong {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    display: flow-root;
+}
+
+button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    background-color: transparent;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    cursor: pointer;
+}
+
+::before, ::after {
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   Layout: Page Wrapper + Section + Container
+   ========================================================================== */
+
+.page_wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.page_main {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+}
+
+.u-section {
+    position: relative;
+    width: 100%;
+}
+
+.u-container {
+    width: 100%;
+    max-width: var(--max-width--main);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--site--margin);
+    padding-right: var(--site--margin);
+}
+
+.u-container-medium {
+    width: 100%;
+    max-width: var(--max-width--medium);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--site--margin);
+    padding-right: var(--site--margin);
+}
+
+.u-container-small {
+    width: 100%;
+    max-width: var(--max-width--small);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--site--margin);
+    padding-right: var(--site--margin);
+}
+
+
+/* ==========================================================================
+   Flex Utilities
+   ========================================================================== */
+
+.u-flex-horizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.u-flex-horizontal-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.u-flex-vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+.u-flex-grow {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+}
+
+
+/* ==========================================================================
+   Grid Utilities
+   ========================================================================== */
+
+.u-grid {
+    display: grid;
+}
+
+.u-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.u-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.u-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+@media (max-width: 991px) {
+    .u-grid-3 {
+        grid-template-columns: 1fr 1fr;
+    }
+    .u-grid-4 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .u-grid-2 {
+        grid-template-columns: 1fr;
+    }
+    .u-grid-3 {
+        grid-template-columns: 1fr;
+    }
+    .u-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   Width Utilities
+   ========================================================================== */
+
+.u-width-full {
+    width: 100%;
+}
+
+.u-width-auto {
+    width: auto;
+}
+
+.u-max-width-full {
+    max-width: var(--max-width--full);
+}
+
+.u-max-width-main {
+    max-width: var(--max-width--main);
+}
+
+.u-max-width-medium {
+    max-width: var(--max-width--medium);
+}
+
+.u-max-width-small {
+    max-width: var(--max-width--small);
+}
+
+
+/* ==========================================================================
+   Padding Utilities — Section Spacing
+   ========================================================================== */
+
+.u-padding-top-none { padding-top: var(--_spacing---section-space--none); }
+.u-padding-top-small { padding-top: var(--_spacing---section-space--small); }
+.u-padding-top-main { padding-top: var(--_spacing---section-space--main); }
+.u-padding-top-large { padding-top: var(--_spacing---section-space--large); }
+.u-padding-top-page-top { padding-top: var(--_spacing---section-space--page-top); }
+
+.u-padding-bottom-none { padding-bottom: var(--_spacing---section-space--none); }
+.u-padding-bottom-small { padding-bottom: var(--_spacing---section-space--small); }
+.u-padding-bottom-main { padding-bottom: var(--_spacing---section-space--main); }
+.u-padding-bottom-large { padding-bottom: var(--_spacing---section-space--large); }
+
+
+/* ==========================================================================
+   Gap Utilities
+   ========================================================================== */
+
+.u-gap-0 { row-gap: var(--_spacing---space--0); column-gap: var(--_spacing---space--0); }
+.u-gap-1 { row-gap: var(--_spacing---space--1); column-gap: var(--_spacing---space--1); }
+.u-gap-2 { row-gap: var(--_spacing---space--2); column-gap: var(--_spacing---space--2); }
+.u-gap-3 { row-gap: var(--_spacing---space--3); column-gap: var(--_spacing---space--3); }
+.u-gap-4 { row-gap: var(--_spacing---space--4); column-gap: var(--_spacing---space--4); }
+.u-gap-5 { row-gap: var(--_spacing---space--5); column-gap: var(--_spacing---space--5); }
+.u-gap-6 { row-gap: var(--_spacing---space--6); column-gap: var(--_spacing---space--6); }
+.u-gap-7 { row-gap: var(--_spacing---space--7); column-gap: var(--_spacing---space--7); }
+.u-gap-8 { row-gap: var(--_spacing---space--8); column-gap: var(--_spacing---space--8); }
+.u-gap-9 { row-gap: var(--_spacing---space--9); column-gap: var(--_spacing---space--9); }
+.u-gap-10 { row-gap: var(--_spacing---space--10); column-gap: var(--_spacing---space--10); }
+
+.u-row-gap-1 { row-gap: var(--_spacing---space--1); }
+.u-row-gap-2 { row-gap: var(--_spacing---space--2); }
+.u-row-gap-3 { row-gap: var(--_spacing---space--3); }
+.u-row-gap-4 { row-gap: var(--_spacing---space--4); }
+.u-row-gap-5 { row-gap: var(--_spacing---space--5); }
+.u-row-gap-6 { row-gap: var(--_spacing---space--6); }
+
+
+/* ==========================================================================
+   Alignment Utilities
+   ========================================================================== */
+
+.u-align-left { text-align: left; }
+.u-align-center { text-align: center; margin-left: auto; margin-right: auto; }
+.u-align-right { text-align: right; margin-left: auto; }
+
+.u-align-items-start { align-items: flex-start; }
+.u-align-items-center { align-items: center; }
+.u-align-items-end { align-items: flex-end; }
+.u-align-items-stretch { align-items: stretch; }
+
+.u-justify-start { justify-content: flex-start; }
+.u-justify-center { justify-content: center; }
+.u-justify-end { justify-content: flex-end; }
+.u-justify-between { justify-content: space-between; }
+
+
+/* ==========================================================================
+   Text Utilities
+   ========================================================================== */
+
+.u-text-align-center { text-align: center; }
+.u-text-align-left { text-align: left; }
+.u-text-align-right { text-align: right; }
+.u-text-uppercase { text-transform: uppercase; }
+.u-text-capitalize { text-transform: capitalize; }
+
+
+/* ==========================================================================
+   Position Utilities
+   ========================================================================== */
+
+.u-position-relative { position: relative; }
+.u-position-absolute { position: absolute; }
+.u-position-sticky { position: sticky; top: 0; }
+
+.u-overflow-hidden { overflow-x: hidden; overflow-y: hidden; }
+.u-overflow-visible { overflow-x: visible; overflow-y: visible; }
+.u-overflow-auto { overflow-x: auto; overflow-y: auto; }
+
+
+/* ==========================================================================
+   Margin Utilities
+   ========================================================================== */
+
+.u-margin-top-auto { margin-top: auto; }
+.u-margin-bottom-auto { margin-bottom: auto; }
+
+
+/* ==========================================================================
+   Visibility — Breakpoint-based
+   ========================================================================== */
+
+@media (max-width: 991px) {
+    .u-hide-tablet { display: none; }
+}
+
+@media (max-width: 767px) {
+    .u-hide-mobile-landscape { display: none; }
+}
+
+@media (max-width: 478px) {
+    .u-hide-mobile-portrait { display: none; }
+}
+
+.u-show-tablet { display: none; }
+.u-show-mobile-landscape { display: none; }
+.u-show-mobile-portrait { display: none; }
+
+@media (max-width: 991px) {
+    .u-show-tablet { display: block; }
+}
+
+@media (max-width: 767px) {
+    .u-show-mobile-landscape { display: block; }
+}
+
+@media (max-width: 478px) {
+    .u-show-mobile-portrait { display: block; }
+}
+
+
+/* ==========================================================================
+   Component: Heading — Uses data-style variants
+   ========================================================================== */
+
+.c-heading {
+    font-family: var(--font--primary-family), sans-serif;
+    font-weight: var(--font--primary-bold);
+    letter-spacing: var(--letter-spacing--tight);
+    line-height: var(--line-height--medium);
+    color: var(--_theme---text);
+}
+
+.c-heading[data-style="display"] {
+    font-family: var(--font--display-family), cursive;
+    font-size: var(--font-size--display);
+    font-weight: var(--font--display-medium);
+    line-height: var(--line-height--small);
+    letter-spacing: var(--letter-spacing--normal);
+}
+
+.c-heading[data-style="h1"] {
+    font-size: var(--font-size--h1);
+}
+
+.c-heading[data-style="h2"] {
+    font-size: var(--font-size--h2);
+}
+
+.c-heading[data-style="h3"] {
+    font-size: var(--font-size--h3);
+}
+
+.c-heading[data-style="h4"] {
+    font-size: var(--font-size--h4);
+    font-weight: var(--font--primary-medium);
+}
+
+.c-heading[data-style="h5"] {
+    font-size: var(--font-size--h5);
+    font-weight: var(--font--primary-medium);
+}
+
+.c-heading[data-style="h6"] {
+    font-size: var(--font-size--h6);
+    font-weight: var(--font--primary-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing--wide);
+}
+
+
+/* ==========================================================================
+   Component: Paragraph
+   ========================================================================== */
+
+.c-paragraph {
+    font-family: var(--font--primary-family), sans-serif;
+    font-weight: var(--font--primary-regular);
+    line-height: var(--line-height--large);
+    color: var(--_theme---text);
+}
+
+.u-text-style-main {
+    font-size: var(--font-size--text-main);
+}
+
+.u-text-style-small {
+    font-size: var(--font-size--text-small);
+}
+
+.u-text-style-large {
+    font-size: var(--font-size--text-large);
+}
+
+
+/* ==========================================================================
+   Component: Button
+   ========================================================================== */
+
+.c-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--_spacing---space--3);
+    padding-right: var(--_spacing---space--5);
+    padding-bottom: var(--_spacing---space--3);
+    padding-left: var(--_spacing---space--5);
+    background-color: var(--_theme---button-primary--background);
+    color: var(--_theme---button-primary--text);
+    border-top-left-radius: var(--radius--button);
+    border-top-right-radius: var(--radius--button);
+    border-bottom-left-radius: var(--radius--button);
+    border-bottom-right-radius: var(--radius--button);
+    border-top-width: var(--border-width--button);
+    border-right-width: var(--border-width--button);
+    border-bottom-width: var(--border-width--button);
+    border-left-width: var(--border-width--button);
+    border-top-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: var(--_theme---button-primary--border);
+    border-right-color: var(--_theme---button-primary--border);
+    border-bottom-color: var(--_theme---button-primary--border);
+    border-left-color: var(--_theme---button-primary--border);
+    box-shadow: 0 0.25rem 0 0 var(--button--shadow-color);
+    font-family: var(--font--primary-family), sans-serif;
+    font-weight: var(--font--primary-medium);
+    font-size: var(--font-size--text-main);
+    line-height: var(--line-height--small);
+    letter-spacing: var(--letter-spacing--normal);
+    text-decoration-line: none;
+    cursor: pointer;
+    transition-property: box-shadow, transform;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+}
+
+.c-button:hover {
+    box-shadow: none;
+    transform: translateY(0.25rem);
+}
+
+.c-button:active {
+    box-shadow: none;
+    transform: translateY(0.25rem);
+}
+
+.c-button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--_spacing---space--3);
+    padding-right: var(--_spacing---space--5);
+    padding-bottom: var(--_spacing---space--3);
+    padding-left: var(--_spacing---space--5);
+    background-color: var(--_theme---button-secondary--background);
+    color: var(--_theme---button-secondary--text);
+    border-top-left-radius: var(--radius--button);
+    border-top-right-radius: var(--radius--button);
+    border-bottom-left-radius: var(--radius--button);
+    border-bottom-right-radius: var(--radius--button);
+    border-top-width: var(--border-width--button);
+    border-right-width: var(--border-width--button);
+    border-bottom-width: var(--border-width--button);
+    border-left-width: var(--border-width--button);
+    border-top-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: var(--_theme---button-secondary--border);
+    border-right-color: var(--_theme---button-secondary--border);
+    border-bottom-color: var(--_theme---button-secondary--border);
+    border-left-color: var(--_theme---button-secondary--border);
+    box-shadow: 0 0.25rem 0 0 var(--button--shadow-color);
+    font-family: var(--font--primary-family), sans-serif;
+    font-weight: var(--font--primary-medium);
+    font-size: var(--font-size--text-main);
+    line-height: var(--line-height--small);
+    letter-spacing: var(--letter-spacing--normal);
+    text-decoration-line: none;
+    cursor: pointer;
+    transition-property: box-shadow, transform;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+}
+
+.c-button-secondary:hover {
+    box-shadow: none;
+    transform: translateY(0.25rem);
+}
+
+.c-button-secondary:active {
+    box-shadow: none;
+    transform: translateY(0.25rem);
+}
+
+
+/* ==========================================================================
+   Component: Image
+   ========================================================================== */
+
+.c-image {
+    width: 100%;
+    border-top-left-radius: var(--radius--main);
+    border-top-right-radius: var(--radius--main);
+    border-bottom-left-radius: var(--radius--main);
+    border-bottom-right-radius: var(--radius--main);
+}
+
+.c-image-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.c-image-contain {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}

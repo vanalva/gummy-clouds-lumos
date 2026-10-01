@@ -1,0 +1,24 @@
+<!-- Component: Media Player Bar -->
+<!-- Usage: Video/audio player controls (Video detail, Book detail pages) -->
+<div class="media_player u-flex-horizontal u-gap-3 u-align-items-center">
+    <!-- Play/Pause -->
+    <button class="media_player_btn" aria-label="Play">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"></polygon></svg>
+    </button>
+    <!-- Progress bar -->
+    <div class="media_player_progress u-flex-grow">
+        <div class="media_player_track">
+            <div class="media_player_fill" style="width: 35%"></div>
+        </div>
+    </div>
+    <!-- Time -->
+    <span class="c-paragraph u-text-style-small media_player_time">14:47/2:04</span>
+    <!-- Volume -->
+    <button class="media_player_btn" aria-label="Volume">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+    </button>
+    <!-- Fullscreen -->
+    <button class="media_player_btn" aria-label="Fullscreen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+    </button>
+</div>

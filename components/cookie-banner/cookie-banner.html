@@ -1,0 +1,39 @@
+<!-- ================================================================
+     Component: Cookie Consent Banner
+     Fixed-bottom floating bar, gummy style
+     ================================================================ -->
+
+<div class="cookie_banner" data-cookie-banner>
+    <div class="cookie_banner_inner">
+
+        <!-- Left: illustration + text -->
+        <div class="cookie_banner_content">
+            <img
+                src="../../assets/char-cloud-happy.svg"
+                alt="Happy cloud character"
+                loading="lazy"
+                class="cookie_banner_icon"
+            >
+            <p class="c-paragraph u-text-style-small cookie_banner_text">
+                We use cookies to make your experience sweeter! By continuing, you agree to our
+                <a href="privacy.html" class="cookie_banner_link">cookie policy</a>.
+            </p>
+        </div>
+
+        <!-- Right: action buttons -->
+        <div class="cookie_banner_actions">
+            <a href="#" class="c-button" data-cookie-accept>Accept all</a>
+            <a href="privacy.html" class="c-button-secondary" data-cookie-manage>Manage</a>
+            <button class="cookie_banner_close" data-cookie-dismiss aria-label="Dismiss cookie banner">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M15 5L5 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M5 5L15 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Cookie Banner Script -->
+<script src="../../components/cookie-banner/cookie-banner.js"></script>

@@ -1,0 +1,15 @@
+<!-- Component: Video Card -->
+<!-- Usage: Video thumbnail with play button overlay, title below -->
+<!-- Used in: How it works, Videos page, Resources -->
+<a href="/video" class="video_card u-flex-vertical u-gap-3">
+    <div class="video_card_thumbnail u-position-relative u-overflow-hidden">
+        <img src="../assets/placeholder.jpg" alt="Learn how to brush" class="video_card_image" loading="lazy" width="400" height="300">
+        <div class="video_card_play u-position-absolute">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="24" fill="var(--swatch--light-100)"/>
+                <polygon points="20,16 34,24 20,32" fill="var(--swatch--dark-900)"/>
+            </svg>
+        </div>
+    </div>
+    <p class="c-paragraph u-text-style-main video_card_title">Learn how to</p>
+</a>

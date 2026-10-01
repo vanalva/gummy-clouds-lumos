@@ -1,0 +1,526 @@
+/*
+ * ============================================================================
+ * GUMMY CLOUDS — Design System Variables
+ * Framework: LUMOS
+ * Source: Brand Style Guide PDF + Figma (gr6OheF8eiWnMibYw8E65j)
+ * ============================================================================
+ */
+
+
+/* ============================================================================
+   EMBED: :root variables (must go in CSS embed, not styleLess)
+   ============================================================================ */
+
+:root {
+
+  /* ==========================================================================
+     site
+     ========================================================================== */
+
+  --site--viewport-max: 90;
+  --site--viewport-min: 20;
+  --site--margin: clamp(1 * 1rem, ((1 - ((1 - 1) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1 - 1) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1 * 1rem);
+  --site--gutter: 1rem;
+  --site--column-count: 12;
+  --site--column-width: calc((min(var(--max-width--main), 100% - var(--site--margin) * 2) - (var(--site--gutter) * (var(--site--column-count) - 1))) / var(--site--column-count));
+
+
+  /* ==========================================================================
+     max-width
+     ========================================================================== */
+
+  --max-width--full: 100%;
+  --max-width--main: calc(var(--site--viewport-max) * 1rem);
+  --max-width--medium: 120rem;
+  --max-width--small: 100rem;
+
+
+  /* ==========================================================================
+     swatch — Gummy Clouds Color Palette
+     ========================================================================== */
+
+  --swatch--transparent: transparent;
+
+  /* ── Neutrals: Cloud tones ─────────────── */
+  --swatch--light-100: #EAE6DF;                                                /* Marshmallow — the "white" */
+  --swatch--light-bright: #F5F2ED;                                             /* Bright Marshmallow — dark mode text only */
+  --swatch--light-200: #EAE6DF;                                                /* Marshmallow Clouds (alias) */
+  --swatch--light-200-o20: color-mix(in srgb, var(--swatch--light-200) 20%, transparent);
+  --swatch--light-300: #DBD6CE;                                                /* Semi Dark Clouds */
+  --swatch--light-400: #C1B8AA;                                                /* Dark Clouds */
+
+  /* ── Darks ─────────────────────────────── */
+  --swatch--dark-800: #2A2620;
+  --swatch--dark-900: #1E1C18;                                                 /* Dentist */
+  --swatch--dark-900-o20: color-mix(in srgb, var(--swatch--dark-900) 20%, transparent);
+
+  /* ── Brand Primary: Pink (Toothbrush) ──── */
+  --swatch--brand-500: #FF8098;                                                /* Toothbrush */
+  --swatch--brand-100: color-mix(in srgb, var(--swatch--brand-500), white 80%);
+  --swatch--brand-200: color-mix(in srgb, var(--swatch--brand-500), white 60%);
+  --swatch--brand-300: color-mix(in srgb, var(--swatch--brand-500), white 40%);
+  --swatch--brand-400: #FF99B1;                                                /* Old Toothbrush */
+  --swatch--brand-600: color-mix(in srgb, var(--swatch--brand-500), black 20%);
+  --swatch--brand-700: color-mix(in srgb, var(--swatch--brand-500), black 40%);
+  --swatch--brand-800: color-mix(in srgb, var(--swatch--brand-500), black 60%);
+  --swatch--brand-900: color-mix(in srgb, var(--swatch--brand-500), black 80%);
+  --swatch--brand-text: var(--swatch--dark-900);
+  --swatch--brand-text-o20: color-mix(in srgb, var(--swatch--brand-text) 20%, transparent);
+
+  /* ── Brand Secondary: Purple (Mouthwash) ── */
+  --swatch--brand-500-secondary: #716CE0;                                      /* Sweet Mouthwash */
+  --swatch--brand-100-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), white 80%);
+  --swatch--brand-200-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), white 60%);
+  --swatch--brand-300-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), white 40%);
+  --swatch--brand-400-secondary: #AAA1FF;                                      /* Mouthwash */
+  --swatch--brand-600-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), black 20%);
+  --swatch--brand-700-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), black 40%);
+  --swatch--brand-800-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), black 60%);
+  --swatch--brand-900-secondary: color-mix(in srgb, var(--swatch--brand-500-secondary), black 80%);
+  --swatch--dark-900-secondary: #3B2E5A;
+
+  /* ── Accent: Yellow (Teeth) ────────────── */
+  --swatch--accent-500: #FFC84D;                                               /* Teeth */
+  --swatch--accent-100: color-mix(in srgb, var(--swatch--accent-500), white 80%);
+  --swatch--accent-200: color-mix(in srgb, var(--swatch--accent-500), white 60%);
+  --swatch--accent-300: #F9E587;                                               /* Natural Teeth */
+  --swatch--accent-400: color-mix(in srgb, var(--swatch--accent-500), white 20%);
+  --swatch--accent-600: color-mix(in srgb, var(--swatch--accent-500), black 20%);
+  --swatch--accent-700: color-mix(in srgb, var(--swatch--accent-500), black 40%);
+
+
+  /* ==========================================================================
+     border-width
+     ========================================================================== */
+
+  --border-width--main: 0.1875rem;                                             /* ~3px — thick "gummy" borders */
+  --border-width--button: 0.1875rem;                                           /* Button-specific border */
+
+  /* ── Button shadow — "sticker/stamp" 3D effect ── */
+  --button--shadow-color: var(--swatch--dark-900);
+
+
+  /* ==========================================================================
+     radius — Proportional rounding
+     Ratio ~22%: every element feels equally rounded regardless of size.
+     Formula: element-height × 0.22
+       button (3rem)  → 0.66rem
+       input  (3rem)  → 0.66rem
+       card   (auto)  → 1.5rem  (use --radius--main)
+       navbar (5rem)  → 1.1rem
+     ========================================================================== */
+
+  --radius--ratio: 0.22;
+  --radius--small: 0.625rem;                                                  /* ~small elements, tags */
+  --radius--main: 1.5rem;                                                     /* cards, containers */
+  --radius--large: 2rem;                                                      /* hero cards, large panels */
+  --radius--round: 50vw;                                                      /* circles, pills (badges only) */
+  --radius--button: 0.66rem;                                                  /* buttons: 3rem × 0.22 */
+  --radius--nav: 1.1rem;                                                      /* navbar: 5rem × 0.22 */
+
+
+  /* ==========================================================================
+     highlight — Shape rotation modifiers
+     ========================================================================== */
+
+  --hl--rotate-none: 0deg;
+  --hl--rotate-tilt-right: 5deg;
+  --hl--rotate-tilt-right-15: 15deg;
+  --hl--rotate-tilt-right-30: 30deg;
+  --hl--rotate-tilt-left: -5deg;
+  --hl--rotate-tilt-left-15: -15deg;
+  --hl--rotate-tilt-left-30: -30deg;
+  --hl--rotate-inverted: 180deg;
+
+
+  /* ==========================================================================
+     focus
+     ========================================================================== */
+
+  --focus--width: 0.125rem;
+  --focus--offset-outer: 0.1875rem;
+  --focus--offset-inner: calc(var(--focus--width) * -1);
+
+
+  /* ==========================================================================
+     nav
+     ========================================================================== */
+
+  --nav--height: 5rem;
+  --nav--height-total: var(--nav--height);
+  --nav--banner-height: 2.4rem;
+  --nav--max-width-outer: var(--max-width--main);
+  --nav--max-width-inner: var(--max-width--main);
+  --nav--spacing-outer-horizontal: var(--site--margin);
+  --nav--spacing-outer-vertical: var(--site--margin);
+  --nav--spacing-inner-horizontal: var(--_spacing---space--5);
+  --nav--radius: var(--radius--nav);
+  --nav--hamburger-thickness: var(--border-width--main);
+  --nav--hamburger-gap: var(--_spacing---space--2);
+  --nav--menu-open-duration: var(--nav-duration, 0.4s);
+  --nav--menu-close-duration: var(--nav-duration, 0.4s);
+  --nav--dropdown-open-duration: var(--nav-duration, 0.4s);
+  --nav--dropdown-close-duration: var(--nav-duration, 0.4s);
+
+
+  /* ==========================================================================
+     Theme — Base mode (Light)
+     ========================================================================== */
+
+  --_theme---background: var(--swatch--light-100);
+  --_theme---text: var(--swatch--dark-900);
+  --_theme---background-2: var(--swatch--light-200);
+  --_theme---border: var(--swatch--dark-900-o20);
+  --_theme---heading-accent: var(--swatch--brand-600);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--brand-300);
+  --_theme---selection--text: var(--swatch--brand-text);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--_theme---text);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--light-100);
+  --_theme---nav--pill-border: var(--swatch--dark-900);
+  --_theme---nav--link: var(--swatch--dark-900);
+  --_theme---nav--link-hover: var(--swatch--brand-500);
+  --_theme---button-primary--background: var(--swatch--brand-500);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--brand-600);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: var(--swatch--light-100);
+  --_theme---button-secondary--border: var(--swatch--dark-900);
+  --_theme---button-secondary--text: var(--swatch--dark-900);
+  --_theme---button-secondary--background-hover: var(--swatch--light-200);
+  --_theme---button-secondary--border-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--text-hover: var(--swatch--dark-900);
+
+
+  /* ==========================================================================
+     font — Gummy Clouds Typography
+     ========================================================================== */
+
+  --font--display-family: "Gluten";                                            /* Display/splash headings */
+  --font--display-regular: 400;
+  --font--display-medium: 500;
+  --font--display-trim-top: 0.25em;
+  --font--display-trim-bottom: 0.25em;
+
+  --font--primary-family: "Figtree";                                            /* Headings H1-H6 */
+  --font--primary-trim-top: 0.31em;
+  --font--primary-trim-bottom: 0.31em;
+  --font--primary-thin: 100;
+  --font--primary-light: 300;
+  --font--primary-regular: 400;
+  --font--primary-medium: 500;
+  --font--primary-bold: 700;
+
+  --font--secondary-family: "Space Grotesk";                                    /* Body text, alternative */
+  --font--secondary-regular: 400;
+  --font--secondary-medium: 500;
+  --font--secondary-bold: 700;
+  --font--secondary-trim-top: 0.31rem;
+  --font--secondary-trim-bottom: 0.31rem;
+
+
+  /* ==========================================================================
+     letter-spacing
+     ========================================================================== */
+
+  --letter-spacing--tight: -0.02em;
+  --letter-spacing--normal: 0em;
+  --letter-spacing--wide: 0.05em;
+
+
+  /* ==========================================================================
+     line-height
+     ========================================================================== */
+
+  --line-height--small: 1;
+  --line-height--medium: 1.15;
+  --line-height--large: 1.4;
+  --line-height--huge: 1.6;
+
+
+  /* ==========================================================================
+     font-size (responsive via clamp)
+     ========================================================================== */
+
+  --font-size--text-small: clamp(0.875 * 1rem, ((0.875 - ((1 - 0.875) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1 - 0.875) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1 * 1rem);
+  --font-size--text-main: clamp(1 * 1rem, ((1 - ((1.125 - 1) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1.125 - 1) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1.125 * 1rem);
+  --font-size--text-large: clamp(1.125 * 1rem, ((1.125 - ((1.25 - 1.125) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1.25 - 1.125) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1.25 * 1rem);
+  --font-size--h6: clamp(1 * 1rem, ((1 - ((1.125 - 1) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1.125 - 1) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1.125 * 1rem);
+  --font-size--h5: clamp(1.375 * 1rem, ((1.375 - ((1.5 - 1.375) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1.5 - 1.375) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1.5 * 1rem);
+  --font-size--h4: clamp(1.75 * 1rem, ((1.75 - ((2 - 1.75) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((2 - 1.75) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 2 * 1rem);
+  --font-size--h3: clamp(2.25 * 1rem, ((2.25 - ((3 - 2.25) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((3 - 2.25) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 3 * 1rem);
+  --font-size--h2: clamp(2.5 * 1rem, ((2.5 - ((4 - 2.5) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((4 - 2.5) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 4 * 1rem);
+  --font-size--h1: clamp(3 * 1rem, ((3 - ((6 - 3) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((6 - 3) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 6 * 1rem);
+  --font-size--display: clamp(6rem, ((6 - ((10 - 6) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((10 - 6) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 10rem);
+
+
+  /* ==========================================================================
+     text-transform
+     ========================================================================== */
+
+  --text-transform--none: var(--text-transform, none);
+  --text-transform--uppercase: uppercase;
+  --text-transform--capitalize: capitalize;
+  --text-transform--lowercase: lowercase;
+
+
+  /* ==========================================================================
+     spacing — Responsive scale
+     ========================================================================== */
+
+  --_spacing---space--0: 0px;
+  --_spacing---space--1: clamp(0.375 * 1rem, ((0.375 - ((0.5 - 0.375) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((0.5 - 0.375) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 0.5 * 1rem);
+  --_spacing---space--2: clamp(0.625 * 1rem, ((0.625 - ((0.75 - 0.625) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((0.75 - 0.625) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 0.75 * 1rem);
+  --_spacing---space--3: clamp(0.875 * 1rem, ((0.875 - ((1 - 0.875) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1 - 0.875) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1 * 1rem);
+  --_spacing---space--4: clamp(1.25 * 1rem, ((1.25 - ((1.5 - 1.25) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((1.5 - 1.25) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 1.5 * 1rem);
+  --_spacing---space--5: clamp(1.75 * 1rem, ((1.75 - ((2 - 1.75) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((2 - 1.75) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 2 * 1rem);
+  --_spacing---space--6: clamp(2 * 1rem, ((2 - ((2.5 - 2) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((2.5 - 2) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 2.5 * 1rem);
+  --_spacing---space--7: clamp(2.25 * 1rem, ((2.25 - ((3 - 2.25) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((3 - 2.25) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 3 * 1rem);
+  --_spacing---space--8: clamp(2.5 * 1rem, ((2.5 - ((4 - 2.5) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((4 - 2.5) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 4 * 1rem);
+  --_spacing---space--9: clamp(2.75 * 1rem, ((2.75 - ((4.5 - 2.75) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((4.5 - 2.75) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 4.5 * 1rem);
+  --_spacing---space--10: clamp(3 * 1rem, ((3 - ((5 - 3) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((5 - 3) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 5 * 1rem);
+  --_spacing---space--11: clamp(3.25 * 1rem, ((3.25 - ((5.5 - 3.25) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((5.5 - 3.25) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 5.5 * 1rem);
+  --_spacing---space--12: clamp(3.5 * 1rem, ((3.5 - ((6 - 3.5) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((6 - 3.5) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 6 * 1rem);
+  --_spacing---space--negative: -1rem;
+
+  /* ── Section spacing ──────────────────── */
+  --_spacing---section-space--none: 0px;
+  --_spacing---section-space--small: clamp(3 * 1rem, ((3 - ((5 - 3) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((5 - 3) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 5 * 1rem);
+  --_spacing---section-space--main: clamp(4 * 1rem, ((4 - ((7 - 4) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((7 - 4) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 7 * 1rem);
+  --_spacing---section-space--large: clamp(5.5 * 1rem, ((5.5 - ((10 - 5.5) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((10 - 5.5) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 10 * 1rem);
+  --_spacing---section-space--page-top: clamp(10 * 1rem, ((10 - ((14 - 10) / (var(--site--viewport-max) - var(--site--viewport-min)) * var(--site--viewport-min))) * 1rem + ((14 - 10) / (var(--site--viewport-max) - var(--site--viewport-min))) * 100vw), 14 * 1rem);
+
+}
+
+
+/* ============================================================================
+   Theme Modes
+   ============================================================================ */
+
+/* Dark mode — Dentist dark bg, cloud-tone text */
+.u-theme-dark {
+  background-color: var(--_theme---background);
+  color: var(--_theme---text);
+
+  --_theme---background: var(--swatch--dark-900);
+  --_theme---text: var(--swatch--light-bright);
+  --_theme---background-2: var(--swatch--dark-800);
+  --_theme---border: var(--swatch--light-200-o20);
+  --_theme---heading-accent: var(--swatch--light-bright);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--brand-300);
+  --_theme---selection--text: var(--swatch--brand-text);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--swatch--brand-500);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--dark-800);
+  --_theme---nav--pill-border: var(--swatch--light-300);
+  --_theme---nav--link: var(--swatch--light-bright);
+  --_theme---nav--link-hover: var(--swatch--brand-500);
+  --button--shadow-color: var(--swatch--light-300);
+  --_theme---button-primary--background: var(--swatch--light-100);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--light-200);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: transparent;
+  --_theme---button-secondary--border: var(--swatch--light-300);
+  --_theme---button-secondary--text: var(--swatch--light-bright);
+  --_theme---button-secondary--background-hover: transparent;
+  --_theme---button-secondary--border-hover: var(--swatch--light-bright);
+  --_theme---button-secondary--text-hover: var(--swatch--light-bright);
+}
+
+/* Light mode — explicit */
+.u-theme-light {
+  background-color: var(--_theme---background);
+  color: var(--_theme---text);
+
+  --_theme---background: var(--swatch--light-100);
+  --_theme---text: var(--swatch--dark-900);
+  --_theme---background-2: var(--swatch--light-200);
+  --_theme---border: var(--swatch--dark-900-o20);
+  --_theme---heading-accent: var(--swatch--brand-600);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--brand-300);
+  --_theme---selection--text: var(--swatch--brand-text);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--_theme---text);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--light-100);
+  --_theme---nav--pill-border: var(--swatch--dark-900);
+  --_theme---nav--link: var(--swatch--dark-900);
+  --_theme---nav--link-hover: var(--swatch--brand-500);
+  --button--shadow-color: var(--swatch--dark-900);
+  --_theme---button-primary--background: var(--swatch--brand-500);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--brand-600);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: var(--swatch--light-100);
+  --_theme---button-secondary--border: var(--swatch--dark-900);
+  --_theme---button-secondary--text: var(--swatch--dark-900);
+  --_theme---button-secondary--background-hover: var(--swatch--light-200);
+  --_theme---button-secondary--border-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--text-hover: var(--swatch--dark-900);
+}
+
+/* Brand mode — Pink bg with dark text */
+.u-theme-brand {
+  background-color: var(--_theme---background);
+  color: var(--_theme---text);
+
+  --_theme---background: var(--swatch--brand-500);
+  --_theme---text: var(--swatch--dark-900);
+  --_theme---background-2: var(--swatch--brand-600);
+  --_theme---border: var(--swatch--brand-text-o20);
+  --_theme---heading-accent: var(--swatch--light-100);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--brand-300);
+  --_theme---selection--text: var(--swatch--brand-text);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--_theme---text);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--light-100);
+  --_theme---nav--pill-border: var(--swatch--dark-900);
+  --_theme---nav--link: var(--swatch--dark-900);
+  --_theme---nav--link-hover: var(--swatch--dark-900);
+  --button--shadow-color: var(--swatch--dark-900);
+  --_theme---button-primary--background: var(--swatch--brand-500);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--brand-600);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: var(--swatch--light-100);
+  --_theme---button-secondary--border: var(--swatch--dark-900);
+  --_theme---button-secondary--text: var(--swatch--dark-900);
+  --_theme---button-secondary--background-hover: var(--swatch--light-200);
+  --_theme---button-secondary--border-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--text-hover: var(--swatch--dark-900);
+}
+
+/* Clouds mode — Warm neutral (Marshmallow Clouds bg) */
+.u-theme-clouds {
+  background-color: var(--_theme---background);
+  color: var(--_theme---text);
+
+  --_theme---background: var(--swatch--light-200);
+  --_theme---text: var(--swatch--dark-900);
+  --_theme---background-2: var(--swatch--light-300);
+  --_theme---border: var(--swatch--dark-900-o20);
+  --_theme---heading-accent: var(--swatch--brand-500);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--brand-300);
+  --_theme---selection--text: var(--swatch--brand-text);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--_theme---text);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--light-100);
+  --_theme---nav--pill-border: var(--swatch--dark-900);
+  --_theme---nav--link: var(--swatch--dark-900);
+  --_theme---nav--link-hover: var(--swatch--brand-500);
+  --button--shadow-color: var(--swatch--dark-900);
+  --_theme---button-primary--background: var(--swatch--brand-500);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--brand-600);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: var(--swatch--light-100);
+  --_theme---button-secondary--border: var(--swatch--dark-900);
+  --_theme---button-secondary--text: var(--swatch--dark-900);
+  --_theme---button-secondary--background-hover: var(--swatch--light-300);
+  --_theme---button-secondary--border-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--text-hover: var(--swatch--dark-900);
+}
+
+/* Secondary mode — Purple/Mouthwash bg */
+.u-theme-secondary {
+  background-color: var(--_theme---background);
+  color: var(--_theme---text);
+
+  --_theme---background: var(--swatch--brand-400-secondary);
+  --_theme---text: var(--swatch--dark-900);
+  --_theme---background-2: var(--swatch--brand-300-secondary);
+  --_theme---border: var(--swatch--dark-900-o20);
+  --_theme---heading-accent: var(--swatch--dark-900);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--brand-300);
+  --_theme---selection--text: var(--swatch--brand-text);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--_theme---text);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--light-100);
+  --_theme---nav--pill-border: var(--swatch--dark-900);
+  --_theme---nav--link: var(--swatch--dark-900);
+  --_theme---nav--link-hover: var(--swatch--brand-500-secondary);
+  --button--shadow-color: var(--swatch--dark-900);
+  --_theme---button-primary--background: var(--swatch--brand-400-secondary);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--brand-500-secondary);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: var(--swatch--light-100);
+  --_theme---button-secondary--border: var(--swatch--dark-900);
+  --_theme---button-secondary--text: var(--swatch--dark-900);
+  --_theme---button-secondary--background-hover: var(--swatch--light-200);
+  --_theme---button-secondary--border-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--text-hover: var(--swatch--dark-900);
+}
+
+/* Accent mode — Yellow/Teeth bg */
+.u-theme-accent {
+  background-color: var(--_theme---background);
+  color: var(--_theme---text);
+
+  --_theme---background: var(--swatch--accent-500);
+  --_theme---text: var(--swatch--dark-900);
+  --_theme---background-2: var(--swatch--accent-600);
+  --_theme---border: var(--swatch--dark-900-o20);
+  --_theme---heading-accent: var(--swatch--dark-900);
+  --_theme---background-skeleton: color-mix(in lab, currentcolor 10%, transparent);
+  --_theme---selection--background: var(--swatch--accent-300);
+  --_theme---selection--text: var(--swatch--dark-900);
+  --_theme---text-link--text: var(--_theme---text);
+  --_theme---text-link--text-hover: var(--_theme---text-link--text);
+  --_theme---text-link--border: var(--_theme---border);
+  --_theme---text-link--border-hover: var(--_theme---text);
+  --_theme---nav--background: var(--_theme---background);
+  --_theme---nav--pill: var(--swatch--light-100);
+  --_theme---nav--pill-border: var(--swatch--dark-900);
+  --_theme---nav--link: var(--swatch--dark-900);
+  --_theme---nav--link-hover: var(--swatch--brand-500);
+  --button--shadow-color: var(--swatch--dark-900);
+  --_theme---button-primary--background: var(--swatch--accent-500);
+  --_theme---button-primary--border: var(--swatch--dark-900);
+  --_theme---button-primary--text: var(--swatch--dark-900);
+  --_theme---button-primary--background-hover: var(--swatch--accent-600);
+  --_theme---button-primary--border-hover: var(--swatch--dark-900);
+  --_theme---button-primary--text-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--background: var(--swatch--light-100);
+  --_theme---button-secondary--border: var(--swatch--dark-900);
+  --_theme---button-secondary--text: var(--swatch--dark-900);
+  --_theme---button-secondary--background-hover: var(--swatch--light-200);
+  --_theme---button-secondary--border-hover: var(--swatch--dark-900);
+  --_theme---button-secondary--text-hover: var(--swatch--dark-900);
+}

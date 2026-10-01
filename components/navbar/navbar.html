@@ -1,0 +1,72 @@
+<!-- Component: Navbar -->
+<!-- Usage: Include at top of page_wrap, before <main> -->
+<!-- Variants:
+     - Default (floating): transparent behind, bar floats over hero content
+     - Sitting: add is-accent, is-secondary, or is-brand to nav_section
+-->
+<div class="nav_section">
+    <nav class="nav_component" role="navigation" aria-label="Main navigation">
+        <div class="nav_pill u-flex-horizontal">
+
+            <!-- Logo -->
+            <a href="/" class="nav_logo_link" aria-label="Gummy Clouds — Home">
+                <img src="../assets/logo-vertical-black.svg" alt="Gummy Clouds" class="nav_logo_image" loading="eager">
+            </a>
+
+            <!-- Desktop Links -->
+            <ul class="nav_links u-flex-horizontal u-gap-5 u-hide-tablet" role="list">
+                <li><a href="/families" class="nav_link c-paragraph u-text-style-main">Families</a></li>
+                <li><a href="/dentists" class="nav_link c-paragraph u-text-style-main">Dentists</a></li>
+                <li><a href="/resources" class="nav_link c-paragraph u-text-style-main">Resources</a></li>
+                <li>
+                    <!-- Dropdown: CSS-only hover -->
+                    <div class="nav_dropdown_component">
+                        <button class="nav_link nav_dropdown_trigger c-paragraph u-text-style-main">More
+                            <svg class="nav_dropdown_arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <div class="nav_dropdown_panel">
+                            <div class="nav_dropdown_bubble">
+                                <a href="/about" class="nav_dropdown_link c-paragraph u-text-style-small">About Us</a>
+                                <a href="/blog" class="nav_dropdown_link c-paragraph u-text-style-small">Blog</a>
+                                <a href="/faq" class="nav_dropdown_link c-paragraph u-text-style-small">FAQ</a>
+                                <a href="/contact" class="nav_dropdown_link c-paragraph u-text-style-small">Contact</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Desktop CTAs -->
+            <div class="nav_cta u-flex-horizontal u-gap-2 u-hide-tablet">
+                <a href="/login" class="c-button-secondary">Log in</a>
+                <a href="/signup" class="c-button">Sign up</a>
+            </div>
+
+            <!-- Mobile Menu Trigger -->
+            <button class="nav_hamburger u-show-tablet" aria-label="Open menu" aria-expanded="false" data-nav-trigger>
+                <span class="nav_hamburger_line"></span>
+                <span class="nav_hamburger_line"></span>
+                <span class="nav_hamburger_line"></span>
+            </button>
+        </div>
+    </nav>
+</div>
+
+<!-- Mobile Menu Overlay -->
+<div class="nav_mobile_menu u-theme-clouds" data-nav-menu aria-hidden="true">
+    <div class="nav_mobile_inner u-flex-vertical u-gap-4 u-align-items-center u-justify-center">
+        <ul class="nav_mobile_links u-flex-vertical u-gap-4 u-align-items-center" role="list">
+            <li><a href="/families" class="nav_mobile_link c-heading" data-style="h4">Families</a></li>
+            <li><a href="/dentists" class="nav_mobile_link c-heading" data-style="h4">Dentists</a></li>
+            <li><a href="/resources" class="nav_mobile_link c-heading" data-style="h4">Resources</a></li>
+            <li><a href="/about" class="nav_mobile_link c-heading" data-style="h4">About Us</a></li>
+            <li><a href="/blog" class="nav_mobile_link c-heading" data-style="h4">Blog</a></li>
+            <li><a href="/faq" class="nav_mobile_link c-heading" data-style="h4">FAQ</a></li>
+            <li><a href="/contact" class="nav_mobile_link c-heading" data-style="h4">Contact</a></li>
+        </ul>
+        <div class="u-flex-vertical u-gap-2 u-width-full u-align-items-stretch">
+            <a href="/login" class="c-button-secondary">Log in</a>
+            <a href="/signup" class="c-button">Sign up</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en" style="cursor: crosshair;"><head><script id="fw-freeze-controller">
+(function () {
+    var win = window;
+    if (win.__fwFreeze) return;
+
+    var frozen = false;
+    var rafQueue = [];        // deferred rAF callbacks {id, cb}
+    var timeoutQueue = [];     // deferred setTimeout callbacks (run once on resume)
+    var idSeq = 1;
+
+    var origRaf = (win.requestAnimationFrame || function (cb) { return win.setTimeout(function () { cb(Date.now()); }, 16); }).bind(win);
+    var origCaf = (win.cancelAnimationFrame || function () {}).bind(win);
+    var origSetTimeout = win.setTimeout.bind(win);
+    var origSetInterval = win.setInterval.bind(win);
+
+    // --- requestAnimationFrame: queue while frozen, flush on resume ---
+    win.requestAnimationFrame = function (cb) {
+        if (!frozen) return origRaf(cb);
+        var id = idSeq++;
+        rafQueue.push({ id: id, cb: cb });
+        return id;
+    };
+    win.cancelAnimationFrame = function (id) {
+        for (var i = 0; i < rafQueue.length; i++) {
+            if (rafQueue[i].id === id) { rafQueue.splice(i, 1); return; }
+        }
+        origCaf(id);
+    };
+
+    // --- setTimeout: defer callback while frozen (run once on resume) ---
+    win.setTimeout = function (fn, delay) {
+        if (typeof fn !== 'function') return origSetTimeout.apply(win, arguments);
+        var extra = Array.prototype.slice.call(arguments, 2);
+        var wrapped = function () {
+            if (frozen) { timeoutQueue.push(function () { fn.apply(win, extra); }); return; }
+            fn.apply(win, extra);
+        };
+        return origSetTimeout(wrapped, delay);
+    };
+
+    // --- setInterval: skip ticks while frozen (re-fires naturally on resume) ---
+    win.setInterval = function (fn, delay) {
+        if (typeof fn !== 'function') return origSetInterval.apply(win, arguments);
+        var extra = Array.prototype.slice.call(arguments, 2);
+        var wrapped = function () { if (!frozen) fn.apply(win, extra); };
+        return origSetInterval(wrapped, delay);
+    };
+
+    // --- CSS pause stylesheet (added once, toggled via html.fw-frozen) ---
+    function ensureStyle() {
+        if (win.__fwFreezeStyle) return;
+        try {
+            var s = document.createElement('style');
+            s.id = 'fw-freeze-style';
+            s.textContent = 'html.fw-frozen *, html.fw-frozen *::before, html.fw-frozen *::after {' +
+                ' animation-play-state: paused !important;' +
+                ' transition: none !important;' +
+                ' scroll-behavior: auto !important; }';
+            (document.head || document.documentElement).appendChild(s);
+            win.__fwFreezeStyle = s;
+        } catch (e) {}
+    }
+
+    var pausedMedia = [];
+    function freezeMedia() {
+        pausedMedia = [];
+        try {
+            var media = document.querySelectorAll('video, audio');
+            for (var i = 0; i < media.length; i++) {
+                var m = media[i];
+                if (!m.paused) { pausedMedia.push(m); try { m.pause(); } catch (e) {} }
+            }
+        } catch (e) {}
+    }
+    function resumeMedia() {
+        for (var i = 0; i < pausedMedia.length; i++) {
+            try { pausedMedia[i].play(); } catch (e) {}
+        }
+        pausedMedia = [];
+    }
+
+    function setFrozen(next) {
+        if (next === frozen) return;
+        frozen = next;
+        ensureStyle();
+        try { document.documentElement.classList.toggle('fw-frozen', frozen); } catch (e) {}
+
+        // Best-effort library hook
+        try { if (win.gsap && win.gsap.globalTimeline) win.gsap.globalTimeline.paused(frozen); } catch (e) {}
+
+        if (frozen) {
+            freezeMedia();
+        } else {
+            // Flush deferred work
+            var rq = rafQueue; rafQueue = [];
+            for (var i = 0; i < rq.length; i++) { try { rq[i].cb(Date.now()); } catch (e) {} }
+            var tq = timeoutQueue; timeoutQueue = [];
+            for (var j = 0; j < tq.length; j++) { try { tq[j](); } catch (e) {} }
+            resumeMedia();
+        }
+    }
+
+    win.addEventListener('message', function (e) {
+        if (!e || !e.data) return;
+        if (e.data.type === 'fw-freeze') setFrozen(true);
+        else if (e.data.type === 'fw-unfreeze') setFrozen(false);
+    });
+
+    win.__fwFreeze = { isFrozen: function () { return frozen; }, set: setFrozen };
+})();
+</script>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gummy Clouds — Tiny habits, big smiles</title>
+    <meta name="description" content="Dental care made fun for little smiles. Gummy Clouds transforms brushing into an adventure kids love.">
+    <meta property="og:title" content="Gummy Clouds — Tiny habits, big smiles">
+    <meta property="og:description" content="Dental care made fun for little smiles. Gummy Clouds transforms brushing into an adventure kids love.">
+    <meta property="og:image" content="assets/og-image.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Gluten:wght@400;500&amp;family=Space+Grotesk:wght@300;400;500;700&amp;family=Figtree:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css?v=65135169">
+    <link rel="stylesheet" href="css/framework.css?v=5ef73f43">
+    <link rel="stylesheet" href="css/project.css?v=634c2354">
+<style id="fw-canvas-reset">body{opacity:1!important;visibility:visible!important;}</style>
+<style id="fw-app-cursors">:root{--cur-default:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M201.163 133.54L201.149 133.528L201.134 133.515L91.6855 36.4935C86.5144 31.7659 81.4269 27.9549 76.5421 25.525C71.7671 23.1497 66.0861 21.5569 60.4133 23.1213C54.3118 24.8039 50.4875 29.4674 48.3639 34.759C46.3122 39.8715 45.4999 46.2787 45.4999 53.5383L45.4999 200.431V200.493L45.5008 200.555C45.6218 208.862 50.4279 217.843 55.9963 223.894C58.8934 227.043 62.5163 229.986 66.6704 231.742C70.9172 233.537 76.217 234.254 81.4691 231.884C85.7536 229.951 89.6754 226.055 92.8565 222.651C94.6841 220.695 96.8336 218.252 99.0355 215.749C100.71 213.847 102.414 211.91 104.03 210.126C112.189 201.122 121.346 192.286 132.161 187.407C143.013 182.511 155.809 181.375 167.963 181.146C170.959 181.089 173.85 181.087 176.65 181.085H176.663H176.686C179.447 181.083 182.164 181.081 184.662 181.019C189.231 180.906 194.643 180.609 198.777 178.88C208.711 174.723 210.972 163.838 210.753 156.445C210.521 148.596 207.57 139.272 201.163 133.54Z' fill='%23fff' stroke='%230e0e10' stroke-width='8'/%3E%3C/svg%3E") 5 3;--cur-pointer:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M120.654 226.56L209.928 225.982L220.035 124.547C222.154 103.987 196.764 95.4317 189.716 114.404C189.805 91.6041 166.436 88.7513 159.398 104.26C160.279 85.423 136.433 78.1324 129.079 94.1164V53.5431C129.079 23.1126 98.7605 23.1126 98.7605 53.5431V144.834C48.2297 94.1168 35.8398 130.561 35.8398 130.561C70.1776 153.83 91.1807 226.751 120.654 226.56Z' fill='%23fff' stroke='%230e0e10' stroke-width='8' stroke-linejoin='round'/%3E%3C/svg%3E") 9 2;--cur-text:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M127.93 223.209C136.047 229.785 146.386 233.751 157.637 233.751H163.861C170.212 233.751 175.361 228.603 175.361 222.251V209.684C175.361 203.333 170.212 198.184 163.861 198.184H157.637C151.115 198.184 145.654 192.795 145.654 186.021V69.2299C145.654 62.4559 151.115 57.0668 157.637 57.0668H163.861C170.212 57.0668 175.361 51.9181 175.361 45.5668V33C175.361 26.6487 170.212 21.5 163.861 21.5H157.637C146.386 21.5 136.047 25.4666 127.93 32.0427C119.813 25.4666 109.475 21.5 98.2233 21.5H91.9998C85.6485 21.5 80.4998 26.6487 80.4998 33V45.5668C80.4998 51.9181 85.6485 57.0668 91.9998 57.0668H98.2233C104.746 57.0668 110.207 62.4559 110.207 69.2299V186.021C110.207 192.795 104.746 198.184 98.2233 198.184H91.9998C85.6485 198.184 80.4998 203.333 80.4998 209.684V222.251C80.4998 228.603 85.6484 233.751 91.9998 233.751H98.2233C109.475 233.751 119.813 229.785 127.93 223.209Z' fill='%23fff' stroke='%230e0e10' stroke-width='8'/%3E%3C/svg%3E") 14 14;--cur-grab:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M131.161 29.4654C123.564 29.9227 117.078 37.2105 117.566 44.7415L121.494 112.736C121.69 116.132 118.607 116.829 118.171 114.234L107.597 51.3314C106.558 44.2169 99.4208 38.5277 92.1898 39.0503C84.2336 39.7593 77.8367 48.0202 79.1993 55.8246L93.7003 142.091C93.7496 143.308 93.9506 144.519 94.3044 145.685C93.7371 147.965 93.3986 149.579 93.3986 149.579C45.0621 101.653 33.28 136.1 33.28 136.1C66.1267 158.088 86.0504 226.74 114.244 226.56L199.738 226.26C199.738 226.26 202.925 158.636 209.104 134.004L223.605 76.193C225.925 67.3805 217.66 57.5471 208.499 58.221C202.303 58.5729 196.62 63.3112 195.207 69.3037L182.821 118.128C182.149 120.778 181.503 119.715 181.612 117.529L185.238 44.7419C185.767 36.6115 178.03 28.9402 169.83 29.4654C162.742 29.9001 156.519 36.2081 156.236 43.244L152.913 109.741C152.743 113.12 150.399 113.186 150.194 109.442L146.568 43.2444C146.262 35.6092 138.852 28.9826 131.161 29.4654Z' fill='%23fff' stroke='%230e0e10' stroke-width='8' stroke-linejoin='round'/%3E%3C/svg%3E") 12 7;--cur-grabbing:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M138.019 58.8846C133.638 54.856 127.743 52.4693 121.621 52.8519C113.738 53.3327 106.781 58.3167 103.207 65.0978C99.4171 62.8672 94.9982 61.7027 90.4943 62.0296L90.4231 62.0348L90.352 62.0411C83.8326 62.6245 78.3733 66.2379 74.8581 70.7949C71.355 75.3362 69.2441 81.5154 70.3437 87.9529L72.8497 103.546L71.8703 104.281C71.4687 104.582 71.0401 104.899 70.5893 105.233C66.353 108.368 60.1525 112.958 55.8777 119.277C50.6702 126.975 48.473 136.798 52.3513 149.075C56.3948 161.875 64.2957 175.615 72.9454 186.198C77.2856 191.508 82.0271 196.286 86.8381 199.81C91.423 203.168 97.1306 206.169 103.204 206.137C103.211 206.137 103.218 206.137 103.225 206.137L184.685 205.851L190.143 205.832L192.396 200.861C207.033 168.573 206.368 139.051 205.876 117.24C205.806 114.159 205.74 111.232 205.722 108.472V91.8606V91.8337L205.721 91.8068C205.683 85.7953 203.765 79.5047 200.044 74.6089C196.228 69.5891 190.094 65.6308 182.27 66.182C180.452 66.2918 178.671 66.637 176.963 67.1882C175.864 63.2435 173.673 59.7636 170.979 57.0826C166.804 52.9264 160.723 49.9915 153.986 50.4211C147.668 50.8142 141.894 54.0836 138.019 58.8846Z' fill='%23fff' stroke='%230e0e10' stroke-width='8'/%3E%3C/svg%3E") 12 10;--cur-zoom:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='117' cy='116' r='68' fill='%23fff' stroke='%230e0e10' stroke-width='8'/%3E%3Cline x1='165' y1='165' x2='218' y2='218' stroke='%230e0e10' stroke-width='14' stroke-linecap='round'/%3E%3Cline x1='87' y1='116' x2='147' y2='116' stroke='%230e0e10' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='117' y1='86' x2='117' y2='146' stroke='%230e0e10' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E") 12 12;--cur-crosshair:url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 256 256' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='128' y1='22' x2='128' y2='100' stroke='%230e0e10' stroke-width='16' stroke-linecap='round'/%3E%3Cline x1='128' y1='156' x2='128' y2='234' stroke='%230e0e10' stroke-width='16' stroke-linecap='round'/%3E%3Cline x1='22' y1='128' x2='100' y2='128' stroke='%230e0e10' stroke-width='16' stroke-linecap='round'/%3E%3Cline x1='156' y1='128' x2='234' y2='128' stroke='%230e0e10' stroke-width='16' stroke-linecap='round'/%3E%3Ccircle cx='128' cy='128' r='28' stroke='%230e0e10' stroke-width='16' fill='none'/%3E%3Cline x1='128' y1='22' x2='128' y2='100' stroke='%23fff' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='128' y1='156' x2='128' y2='234' stroke='%23fff' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='22' y1='128' x2='100' y2='128' stroke='%23fff' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='156' y1='128' x2='234' y2='128' stroke='%23fff' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='128' cy='128' r='28' stroke='%23fff' stroke-width='8' fill='none'/%3E%3Ccircle cx='128' cy='128' r='4' fill='%230e0e10'/%3E%3C/svg%3E") 14 14;}
+html,body,body *{cursor:var(--cur-default),auto!important;}
+html,body{scrollbar-width:none;-ms-overflow-style:none;}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;}
+a,a *,button,button *,input[type="submit"],input[type="button"],select,summary,summary *,label,[role="button"],[data-hover],[data-hover] *{cursor:var(--cur-pointer),pointer!important;}
+input[type="text"],input[type="email"],input[type="search"],input[type="url"],input[type="tel"],input[type="password"],textarea,[contenteditable=""],[contenteditable="true"]{cursor:var(--cur-text),text!important;}
+html[data-fw-cursor="select"],html[data-fw-cursor="select"] body,html[data-fw-cursor="select"] body *{cursor:var(--cur-crosshair),crosshair!important;}
+html[data-fw-cursor="hand"],html[data-fw-cursor="hand"] body,html[data-fw-cursor="hand"] body *{cursor:var(--cur-grab),grab!important;}
+html[data-fw-cursor="grabbing"],html[data-fw-cursor="grabbing"] body,html[data-fw-cursor="grabbing"] body *{cursor:var(--cur-grabbing),grabbing!important;}
+html[data-fw-cursor="zoom"],html[data-fw-cursor="zoom"] body,html[data-fw-cursor="zoom"] body *{cursor:var(--cur-zoom),zoom-in!important;}</style><style id="fw-badge-styles">
+                .fw-ab {
+                    position: absolute; top: 0; left: 0; z-index: 99999;
+                    transform: translate(-4px, -4px);
+                    width: 18px; height: 18px; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    pointer-events: auto; cursor: pointer;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+                    transition: transform 0.15s, box-shadow 0.15s;
+                }
+                .fw-ab:hover { transform: translate(-4px, -4px) scale(1.3); box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+                .fw-ab svg { width: 10px; height: 10px; }
+                .fw-ab-cms { background: #d946ef; color: #fff; }
+                .fw-ab-component { background: #beff0d; color: #161516; }
+                .fw-ab-skip { background: #dc2626; color: #fff; }
+                .fw-ab-form { background: #beff0d; color: #161516; }
+                .fw-annotated-cms { outline: 2px solid #d946ef; outline-offset: -1px; }
+                .fw-annotated-component { outline: 2px solid #beff0d; outline-offset: -1px; }
+                .fw-annotated-skip { outline: 2px solid #dc2626; outline-offset: -1px; }
+                .fw-annotated-form { outline: 2px solid #beff0d; outline-offset: -1px; }
+            </style></head>
+<body class="u-theme-light">
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     PRELOADER
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="gc-preloader is-loaded" id="gc-preloader">
+    <div class="gc-preloader_character gc-preloader_float">
+        <img class="gc-preloader_frame" id="gc-preloader-frame" src="assets/characters/happy-teeth/preloader/SVG/Generative Object (165, 0).svg" alt="">
+    </div>
+    <span class="gc-preloader_wordmark">Gummy Clouds</span>
+</div>
+
+<a href="#main-content" class="skip_link">Skip to content</a>
+<div class="page_wrap">
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     NOTIFICATION BAR
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="notif_bar" data-notification-bar="">
+    <div class="u-container u-flex-horizontal u-gap-3 u-align-items-center u-justify-center">
+        <p class="c-paragraph u-text-style-small notif_bar_text">New! Premium plan now available</p>
+        <a href="pricing.html" class="c-paragraph u-text-style-small notif_bar_link">Get 20% off your first month</a>
+        <button class="notif_bar_close" aria-label="Dismiss notification" data-notif-close="">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     NAVBAR
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="nav_section is-sticky fw-annotated fw-annotated-component flw-comp-q5lxr6" data-flw-annotated="true">
+    <nav class="nav_component fw-annotated fw-annotated-component flw-comp-v1vqmx" role="navigation" aria-label="Main navigation" data-fw-badge-positioned="true" data-fw-original-position="" data-flw-annotated="true" style="position: relative;">
+        <div class="nav_pill u-flex-horizontal">
+            <a href="index.html" class="nav_logo_link" aria-label="Gummy Clouds — Home">
+                <img src="assets/logo-vertical-black.svg" alt="Gummy Clouds" class="nav_logo_image" loading="eager">
+            </a>
+            <ul class="nav_links u-flex-horizontal u-gap-5 u-hide-tablet" role="list">
+                <li><a href="how-it-works.html" class="nav_link c-paragraph u-text-style-main">Families</a></li>
+                <li><a href="for-dentists.html" class="nav_link c-paragraph u-text-style-main">Dentists</a></li>
+                <li><a href="resources.html" class="nav_link c-paragraph u-text-style-main">Resources</a></li>
+                <li>
+                    <div class="nav_dropdown_component">
+                        <button class="nav_link nav_dropdown_trigger c-paragraph u-text-style-main">More
+                            <svg class="nav_dropdown_arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <div class="nav_dropdown_panel">
+                            <div class="nav_dropdown_bubble">
+                                <a href="about.html" class="nav_dropdown_link c-paragraph u-text-style-small">About Us</a>
+                                <a href="blog.html" class="nav_dropdown_link c-paragraph u-text-style-small">Blog</a>
+                                <a href="faq.html" class="nav_dropdown_link c-paragraph u-text-style-small">FAQ</a>
+                                <a href="contact.html" class="nav_dropdown_link c-paragraph u-text-style-small">Contact</a>
+                                <a href="for-dentists.html" class="nav_dropdown_link c-paragraph u-text-style-small">For Dentists</a>
+                                <a href="for-schools.html" class="nav_dropdown_link c-paragraph u-text-style-small">For Schools</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="nav_cta u-flex-horizontal u-gap-2 u-hide-tablet">
+                <a href="login.html" class="c-button-secondary">Log in</a>
+                <a href="signup.html" class="c-button">Sign up</a>
+            </div>
+            <button class="nav_hamburger u-show-tablet" aria-label="Open menu" aria-expanded="false" data-nav-trigger="">
+                <span class="nav_hamburger_line"></span>
+                <span class="nav_hamburger_line"></span>
+                <span class="nav_hamburger_line"></span>
+            </button>
+        </div>
+    <div class="fw-ab fw-ab-component" data-fw-path="body &gt; div:nth-of-type(2) &gt; div:nth-of-type(2) &gt; nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"></path><path d="M12 22V12"></path><path d="M21 7l-9 5-9-5"></path></svg></div></nav>
+<div class="fw-ab fw-ab-component" data-fw-path="body &gt; div:nth-of-type(2) &gt; div:nth-of-type(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"></path><path d="M12 22V12"></path><path d="M21 7l-9 5-9-5"></path></svg></div></div>
+
+<!-- Mobile Menu -->
+<div class="nav_mobile_menu u-theme-clouds fw-annotated fw-annotated-component flw-comp-tkq49o" data-nav-menu="" aria-hidden="true" data-flw-annotated="true">
+    <div class="nav_mobile_inner u-flex-vertical u-gap-4 u-align-items-center u-justify-center">
+        <ul class="nav_mobile_links u-flex-vertical u-gap-4 u-align-items-center" role="list">
+            <li><a href="how-it-works.html" class="nav_mobile_link c-heading" data-style="h4">Families</a></li>
+            <li><a href="for-dentists.html" class="nav_mobile_link c-heading" data-style="h4">Dentists</a></li>
+            <li><a href="resources.html" class="nav_mobile_link c-heading" data-style="h4">Resources</a></li>
+            <li><a href="about.html" class="nav_mobile_link c-heading" data-style="h4">About Us</a></li>
+        </ul>
+        <div class="u-flex-vertical u-gap-2 u-width-full u-align-items-stretch">
+            <a href="login.html" class="c-button-secondary">Log in</a>
+            <a href="signup.html" class="c-button">Sign up</a>
+        </div>
+    </div>
+<div class="fw-ab fw-ab-component" data-fw-path="body &gt; div:nth-of-type(2) &gt; div:nth-of-type(3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"></path><path d="M12 22V12"></path><path d="M21 7l-9 5-9-5"></path></svg></div></div>
+
+
+<main class="page_main" id="main-content">
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     S1: HERO — Purple bg, centered heading, sticky with parallax SVGs
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="hero_home_wrap">
+    <section class="hero_home u-section u-position-relative">
+        <div class="hero_home_top">
+            <div class="u-container u-flex-vertical u-align-items-center u-text-align-center u-gap-5">
+                <h1 class="c-heading c-heading-display hero_home_heading gc-hl-clamp--tight" data-style="h1">Dental care made
+                    <img src="assets/shapes/composed/fun-yellow-plaque.svg" alt="fun" class="gc-hl-composed gc-hl-composed--tilt-right">
+                    for little
+                    <img src="assets/shapes/composed/smiles-pink-fan.svg" alt="smiles" class="gc-hl-composed gc-hl-composed--tilt-left">
+                </h1>
+                <div class="u-flex-horizontal u-gap-3">
+                    <a href="login.html" class="c-button-secondary">Log in</a>
+                    <a href="signup.html" class="c-button">Sign up</a>
+                </div>
+            </div>
+        </div>
+        <!-- Parallax SVGs — positioned against the section -->
+        <img src="assets/illustrations/pink-clouds-hero.svg" alt="" class="hero_scene_pink" aria-hidden="true" data-hero-parallax="0.15" data-hero-direction="up" style="transform: translateY(40%);">
+        <img src="assets/illustrations/purple-clouds-bear-hero.svg" alt="" class="hero_scene_bear" aria-hidden="true" data-hero-parallax="0.6" style="transform: translateY(40%);">
+    </section>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     S1b: SCROLL VIDEO — Sticky video scrubbed by scroll with checkpoints
+     ════════════════════════════════════════════════════════════════════════ -->
+<div class="hero_video_wrap">
+    <div class="hero_video_sticky">
+
+        <video class="hero_video_bg" muted="" playsinline="" preload="auto" data-hero-video="">
+            <source src="assets/inline/index-1.mp4" type="video/mp4">
+        </video>
+
+        <!-- Checkpoint 1 — Left column -->
+        <div class="hero_checkpoint hero_checkpoint--left is-active" data-checkpoint="1" data-cp-start="0.05" data-cp-end="0.42">
+            <div class="hero_checkpoint_inner">
+                <h2 class="c-heading c-heading-display gc-hl-clamp--tight" data-style="h2">Brushing just got
+                    <img src="assets/shapes/composed/fun-yellow-plaque.svg" alt="fun" class="gc-hl-composed gc-hl-composed--tilt-right">
+                </h2>
+                <p class="c-paragraph u-text-style-large">Gummy Clouds transforms brushing into an adventure kids love — making dental health playful, engaging, and stress-free.</p>
+                <div class="u-flex-horizontal u-gap-3">
+                    <a href="signup.html" class="c-button">Get started</a>
+                    <a href="how-it-works.html" class="c-button-secondary">How it works</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkpoint 2 — Right column -->
+        <div class="hero_checkpoint hero_checkpoint--right" data-checkpoint="2" data-cp-start="0.58" data-cp-end="0.95">
+            <div class="hero_checkpoint_inner">
+                <h2 class="c-heading c-heading-display" data-style="h2">Meet your cloud buddy</h2>
+                <p class="c-paragraph u-text-style-large">A friendly companion that guides kids through every brush, tracks progress, and rewards healthy habits with stars and surprises.</p>
+                <div class="u-flex-horizontal u-gap-3">
+                    <a href="how-it-works.html" class="c-button">See how it works</a>
+                    <a href="about.html" class="c-button-secondary">Learn more</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     S5: SIMPLE STEPS — Heading + tilted feature cards fan
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="u-section u-padding-top-main u-padding-bottom-main">
+    <div class="u-container u-flex-vertical u-gap-8">
+
+        <!-- Section heading -->
+        <div class="u-flex-vertical u-gap-3 u-align-items-center u-text-align-center">
+            <h2 class="c-heading c-heading-display" data-style="h2">Simple steps to
+                <span class="gc-hl gc-hl--purple-rainbow">healthy</span>
+                <span class="gc-hl gc-hl--pink-oval">smiles</span>
+            </h2>
+        </div>
+
+        <!-- Step cards -->
+        <div class="u-grid-4 u-gap-5 hp_steps_grid">
+
+            <!-- Card: Interactive timer -->
+            <div class="gc-card-light">
+                <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&amp;h=300&amp;fit=crop" alt="Child brushing teeth" class="gc-card-light_image" loading="lazy" width="400" height="300">
+                <div class="gc-card-light_body">
+                    <p class="gc-card-light_eyebrow">Timer</p>
+                    <h3 class="gc-card-light_heading">Interactive brushing timer</h3>
+                    <p class="c-paragraph u-text-style-small">Engaging two-minute brushing sessions with cloud buddies.</p>
+                    <a href="how-it-works.html" class="c-button-text">Learn more
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card: Track progress -->
+            <div class="gc-card-light">
+                <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&amp;h=300&amp;fit=crop" alt="Dental health tracking" class="gc-card-light_image" loading="lazy" width="400" height="300">
+                <div class="gc-card-light_body">
+                    <p class="gc-card-light_eyebrow">Habits</p>
+                    <h3 class="gc-card-light_heading">Track your progress</h3>
+                    <p class="c-paragraph u-text-style-small">Monitor daily dental routines and celebrate milestones.</p>
+                    <a href="signup.html" class="c-button-text">Explore
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card: Earn gummy stars -->
+            <div class="gc-card-light">
+                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&amp;h=300&amp;fit=crop" alt="Rewards and stars" class="gc-card-light_image" loading="lazy" width="400" height="300">
+                <div class="gc-card-light_body">
+                    <p class="gc-card-light_eyebrow">Rewards</p>
+                    <h3 class="gc-card-light_heading">Earn gummy stars</h3>
+                    <p class="c-paragraph u-text-style-small">Collect points for consistent dental care.</p>
+                    <a href="how-it-works.html" class="c-button-text">Discover
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card: Teledentistry -->
+            <div class="gc-card-light">
+                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&amp;h=300&amp;fit=crop" alt="Video call with dentist" class="gc-card-light_image" loading="lazy" width="400" height="300">
+                <div class="gc-card-light_body">
+                    <p class="gc-card-light_eyebrow">Visits</p>
+                    <h3 class="gc-card-light_heading">Teledentistry made easy</h3>
+                    <p class="c-paragraph u-text-style-small">Connect with pediatric dentists through secure video.</p>
+                    <a href="pricing.html" class="c-button-text">Connect
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     S6: FEATURES BAR — Pink bg, 3 features with icons
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="u-section u-padding-top-main u-padding-bottom-main u-theme-brand">
+    <div class="u-container">
+        <div class="u-grid-3 u-gap-8">
+
+            <div class="u-flex-vertical u-gap-3">
+                <img src="assets/illustrations/hero-tooth.svg" alt="" class="hp_feature_icon" aria-hidden="true" loading="lazy">
+                <h3 class="c-heading c-heading-display" data-style="h5">Peace of mind</h3>
+                <p class="c-paragraph u-text-style-main">Expert-backed dental care tracking for modern parents.</p>
+            </div>
+
+            <div class="u-flex-vertical u-gap-3">
+                <img src="assets/illustrations/medal.svg" alt="" class="hp_feature_icon" aria-hidden="true" loading="lazy">
+                <h3 class="c-heading c-heading-display" data-style="h5">Safe platform</h3>
+                <p class="c-paragraph u-text-style-main">Secure, kid-friendly digital environment.</p>
+            </div>
+
+            <div class="u-flex-vertical u-gap-3">
+                <img src="assets/illustrations/check-calendar.svg" alt="" class="hp_feature_icon" aria-hidden="true" loading="lazy">
+                <h3 class="c-heading c-heading-display" data-style="h5">Real-time monitoring</h3>
+                <p class="c-paragraph u-text-style-main">Track your child's dental health progress instantly.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     S7: TESTIMONIALS — "What families say" + cards
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="u-section u-padding-top-main u-padding-bottom-main u-position-relative">
+    <div class="u-container u-flex-vertical u-gap-8">
+
+        <!-- Header -->
+        <div class="u-flex-vertical u-gap-3">
+            <h2 class="c-heading c-heading-display" data-style="h3">
+                <span class="gc-hl gc-hl--purple-scallop">What families say</span>
+            </h2>
+            <p class="c-paragraph u-text-style-main" style="opacity: 0.7">Real stories from parents who transformed dental care.</p>
+        </div>
+
+        <!-- Testimonial cards -->
+        <div class="u-grid-3 u-gap-5">
+            <div class="card_testimonial gc-cloud-card u-flex-vertical u-gap-4">
+                <img src="assets/illustrations/stars-yellow.svg" alt="5 stars" class="card_testimonial_stars" width="80" height="56" loading="lazy">
+                <blockquote class="card_testimonial_quote">
+                    <p class="c-paragraph u-text-style-main">"An incredible tool that makes dental health engaging and educational."</p>
+                </blockquote>
+                <div class="card_testimonial_author u-flex-horizontal u-gap-3 u-align-items-center">
+                    <img src="https://i.pravatar.cc/96?img=32" alt="Emily Rodriguez" class="card_testimonial_avatar" loading="lazy" width="48" height="48">
+                    <div class="card_testimonial_author_info u-flex-vertical">
+                        <p class="c-paragraph u-text-style-main card_testimonial_name">Emily Rodriguez</p>
+                        <p class="c-paragraph u-text-style-small card_testimonial_role">Family health blogger</p>
+                    </div>
+                </div>
+                <a href="blog-post.html" class="c-button-text">Read case study
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+
+            <div class="card_testimonial gc-cloud-card u-flex-vertical u-gap-4">
+                <img src="assets/illustrations/stars-yellow.svg" alt="5 stars" class="card_testimonial_stars" width="80" height="56" loading="lazy">
+                <blockquote class="card_testimonial_quote">
+                    <p class="c-paragraph u-text-style-main">"Our kids now look forward to brushing time with their cloud buddies."</p>
+                </blockquote>
+                <div class="card_testimonial_author u-flex-horizontal u-gap-3 u-align-items-center">
+                    <img src="https://i.pravatar.cc/96?img=11" alt="Michael Chen" class="card_testimonial_avatar" loading="lazy" width="48" height="48">
+                    <div class="card_testimonial_author_info u-flex-vertical">
+                        <p class="c-paragraph u-text-style-main card_testimonial_name">Michael Chen</p>
+                        <p class="c-paragraph u-text-style-small card_testimonial_role">Father and pediatrician</p>
+                    </div>
+                </div>
+                <a href="blog-post.html" class="c-button-text">Read case study
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+
+            <div class="card_testimonial gc-cloud-card u-flex-vertical u-gap-4">
+                <img src="assets/illustrations/stars-yellow.svg" alt="5 stars" class="card_testimonial_stars" width="80" height="56" loading="lazy">
+                <blockquote class="card_testimonial_quote">
+                    <p class="c-paragraph u-text-style-main">"The best dental care app we've tried. My daughter actually asks to brush now!"</p>
+                </blockquote>
+                <div class="card_testimonial_author u-flex-horizontal u-gap-3 u-align-items-center">
+                    <img src="https://i.pravatar.cc/96?img=25" alt="Ana Lopez" class="card_testimonial_avatar" loading="lazy" width="48" height="48">
+                    <div class="card_testimonial_author_info u-flex-vertical">
+                        <p class="c-paragraph u-text-style-main card_testimonial_name">Ana Lopez</p>
+                        <p class="c-paragraph u-text-style-small card_testimonial_role">Mom of 2</p>
+                    </div>
+                </div>
+                <a href="blog-post.html" class="c-button-text">Read case study
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Carousel nav -->
+        <div class="u-flex-horizontal u-gap-2">
+            <button class="c-button-arrow" aria-label="Previous">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <button class="c-button-arrow" aria-label="Next">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Decorative shapes -->
+    <img src="assets/shapes/pink/clover.svg" alt="" style="position:absolute;left:-3rem;bottom:2rem;width:8rem;opacity:0.4;z-index:-1" aria-hidden="true">
+    <img src="assets/shapes/yellow/clover.svg" alt="" style="position:absolute;right:2rem;top:4rem;width:6rem;opacity:0.3;z-index:-1" aria-hidden="true">
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     NEWSLETTER SIGNUP
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="u-section u-padding-top-main u-padding-bottom-main u-theme-clouds">
+    <div class="u-container u-flex-vertical u-gap-5 u-align-items-center u-text-align-center">
+        <h2 class="c-heading c-heading-display" data-style="h3">Get dental tips in your
+            <span class="gc-hl gc-hl--pink-oval">inbox</span>
+        </h2>
+        <p class="c-paragraph u-text-style-main newsletter_subtitle">Join thousands of parents who get weekly tips on making dental care fun and effective.</p>
+        <div class="newsletter_form u-flex-horizontal u-gap-2">
+            <input type="email" class="newsletter_input" placeholder="Enter your email" aria-label="Email address">
+            <a href="#" class="c-button-accent">Subscribe</a>
+        </div>
+        <p class="c-paragraph u-text-style-small newsletter_note">We respect your privacy. Unsubscribe anytime.</p>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     S8: CTA — Giant tooth silhouette, "Start your dental adventure"
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="hp_cta u-section u-padding-top-large u-padding-bottom-large u-position-relative u-overflow-hidden u-theme-clouds">
+    <div class="u-container u-flex-vertical u-gap-5 u-align-items-center u-text-align-center" style="position:relative;z-index:2">
+        <h2 class="c-heading c-heading-display" data-style="h2">Start your dental adventure today</h2>
+        <p class="c-paragraph u-text-style-large" style="max-width:36ch;opacity:0.8">Download the app and transform your child's dental care experience in minutes.</p>
+        <div class="u-flex-horizontal u-gap-3">
+            <a href="signup.html" class="c-button">Download now</a>
+            <a href="about.html" class="c-button-secondary">Learn more</a>
+        </div>
+
+        <!-- App Download Badges -->
+        <div class="u-flex-horizontal u-gap-3 app_badges_row">
+            <a href="#" class="app_badge gc-cloud-card u-flex-horizontal u-gap-2 u-align-items-center" aria-label="Download on the App Store">
+                <div class="app_badge_icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"></path></svg>
+                </div>
+                <div class="u-flex-vertical">
+                    <span class="c-paragraph u-text-style-small app_badge_store">Download on the</span>
+                    <span class="c-paragraph u-text-style-main app_badge_text">App Store</span>
+                </div>
+            </a>
+            <a href="#" class="app_badge gc-cloud-card u-flex-horizontal u-gap-2 u-align-items-center" aria-label="Get it on Google Play">
+                <div class="app_badge_icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 0 1 0 1.38l-2.302 2.302L15.396 13l2.302-2.492zM5.864 3.457L16.8 9.79l-2.302 2.302-8.635-8.635z"></path></svg>
+                </div>
+                <div class="u-flex-vertical">
+                    <span class="c-paragraph u-text-style-small app_badge_store">Get it on</span>
+                    <span class="c-paragraph u-text-style-main app_badge_text">Google Play</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Decorative pink cloud shapes at bottom -->
+    <img src="assets/shapes/pink/clover.svg" alt="" style="position:absolute;left:-5%;bottom:-10%;width:40%;z-index:1;opacity:0.8" aria-hidden="true">
+    <img src="assets/shapes/pink/clover.svg" alt="" style="position:absolute;right:-5%;bottom:-15%;width:35%;z-index:1;opacity:0.7" aria-hidden="true">
+</section>
+
+
+</main>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     FOOTER — Card variant on purple section
+     ════════════════════════════════════════════════════════════════════════ -->
+<footer class="footer_card_section u-section u-padding-top-main u-padding-bottom-main fw-annotated fw-annotated-component flw-comp-cbvowp" role="contentinfo" data-flw-annotated="true">
+    <div class="u-container">
+        <div class="footer_card u-theme-clouds">
+            <div class="footer_card_top u-flex-horizontal u-align-items-start">
+                <div class="footer_card_brand">
+                    <a href="index.html" aria-label="Gummy Clouds — Home">
+                        <img src="assets/logo-imagotype-fullcolor.svg" alt="Gummy Clouds" class="footer_card_logo" loading="lazy">
+                    </a>
+                </div>
+                <div class="footer_card_links u-flex-horizontal u-gap-10">
+                    <ul class="footer_card_link_list u-flex-vertical u-gap-3" role="list">
+                        <li><a href="how-it-works.html" class="footer_card_link c-paragraph u-text-style-main">Families</a></li>
+                        <li><a href="for-dentists.html" class="footer_card_link c-paragraph u-text-style-main">Dentists</a></li>
+                        <li><a href="resources.html" class="footer_card_link c-paragraph u-text-style-main">Resources</a></li>
+                        <li><a href="about.html" class="footer_card_link c-paragraph u-text-style-main">About Us</a></li>
+                        <li><a href="blog.html" class="footer_card_link c-paragraph u-text-style-main">Blog</a></li>
+                    </ul>
+                    <ul class="footer_card_link_list u-flex-vertical u-gap-3" role="list">
+                        <li><a href="faq.html" class="footer_card_link c-paragraph u-text-style-main">FAQ</a></li>
+                        <li><a href="contact.html" class="footer_card_link c-paragraph u-text-style-main">Contact</a></li>
+                        <li><a href="pricing.html" class="footer_card_link c-paragraph u-text-style-main">Pricing</a></li>
+                        <li><a href="privacy.html" class="footer_card_link c-paragraph u-text-style-main">Privacy</a></li>
+                        <li><a href="terms.html" class="footer_card_link c-paragraph u-text-style-main">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer_card_bottom u-flex-horizontal u-align-items-end">
+                <div class="footer_card_info u-flex-vertical u-gap-4">
+                    <p class="c-paragraph u-text-style-main">Get the latest dental health tips and family wellness insights.</p>
+                    <div class="u-flex-horizontal u-gap-2">
+                        <a href="login.html" class="c-button">Log in</a>
+                        <a href="signup.html" class="c-button-secondary">Sign up</a>
+                    </div>
+                </div>
+                <div class="footer_card_social u-flex-horizontal u-gap-3">
+                    <a href="#" class="footer_card_social_link" aria-label="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+                    <a href="#" class="footer_card_social_link" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                    <a href="#" class="footer_card_social_link" aria-label="X"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
+                    <a href="#" class="footer_card_social_link" aria-label="LinkedIn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    <a href="#" class="footer_card_social_link" aria-label="YouTube"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#fff"></polygon></svg></a>
+                </div>
+            </div>
+            <p class="c-paragraph u-text-style-small" style="opacity:0.5;margin-top:var(--_spacing---space--4);text-align:center">© 2026 Gummy Clouds, Inc. All rights reserved.</p>
+        </div>
+    </div>
+<div class="fw-ab fw-ab-component" data-fw-path="body &gt; div:nth-of-type(2) &gt; footer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"></path><path d="M12 22V12"></path><path d="M21 7l-9 5-9-5"></path></svg></div></footer>
+
+
+</div>
+
+<!-- Cookie Banner -->
+<div class="cookie_banner" data-cookie-banner="">
+    <div class="cookie_banner_inner">
+        <div class="cookie_banner_content u-flex-horizontal u-gap-3 u-align-items-center">
+            <img src="assets/characters/cloud-happy.svg" alt="" class="cookie_banner_icon" aria-hidden="true">
+            <p class="c-paragraph u-text-style-small cookie_banner_text">We use cookies to make your experience sweeter! By continuing, you agree to our <a href="privacy.html" class="cookie_banner_link">cookie policy</a>.</p>
+        </div>
+        <div class="cookie_banner_actions u-flex-horizontal u-gap-2">
+            <button class="c-button" data-cookie-accept="">Accept all</button>
+            <a href="privacy.html" class="c-button-secondary">Manage</a>
+            <button class="cookie_banner_close" data-cookie-dismiss="" aria-label="Dismiss"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
+    </div>
+</div>
+<script src="components/cookie-banner/cookie-banner.js"></script>
+<script src="components/navbar/navbar.js"></script>
+<script src="js/notification-bar.js?v=600e375c"></script>
+<script src="js/carousel.js?v=3739dfb4"></script>
+<script src="js/hero-scroll.js?v=d29cc5ba"></script>
+<script>
+(function () {
+    var base = 'assets/characters/happy-teeth/preloader/SVG/';
+    var frames = [
+        base + 'happy-teeth Object (0, 0).svg',
+        base + 'Generative Object (-15, 0).svg',
+        base + 'Generative Object (-30, 0).svg',
+        base + 'Generative Object (-45, 0).svg',
+        base + 'Generative Object (-60, 0).svg',
+        base + 'Generative Object (-75, 0).svg',
+        base + 'Generative Object (-90, 0).svg',
+        base + 'Generative Object (-105, 0).svg',
+        base + 'Generative Object (-120, 0).svg',
+        base + 'Generative Object (-135, 0).svg',
+        base + 'Generative Object (-150, 0).svg',
+        base + 'Generative Object (-165, 0).svg',
+        base + 'Generative Object (-180, 0).svg',
+        base + 'Generative Object (165, 0).svg',
+        base + 'Generative Object (150, 0).svg',
+        base + 'Generative Object (135, 0).svg',
+        base + 'Generative Object (120, 0).svg',
+        base + 'Generative Object (105, 0).svg',
+        base + 'Generative Object (90, 0).svg',
+        base + 'Generative Object (75, 0).svg',
+        base + 'Generative Object (60, 0).svg',
+        base + 'Generative Object (45, 0).svg',
+        base + 'Generative Object (30, 0).svg',
+        base + 'Generative Object (15, 0).svg'
+    ];
+    var img = document.getElementById('gc-preloader-frame');
+    var i = 0;
+    var timer = setInterval(function () {
+        i = (i + 1) % frames.length;
+        img.src = frames[i];
+    }, 80);
+    setTimeout(function () {
+        clearInterval(timer);
+        document.getElementById('gc-preloader').classList.add('is-loaded');
+    }, 3000);
+}());
+</script>
+
+        <script>
+        (function() {
+            let lastHovered = null;
+            let selectedEl = null;
+            let navigateMode = false;
+            // Interact mode: clicks reach the page's own JS handlers (modals, sliders,
+            // buttons) but internal links are inert — no page navigation, no selection.
+            let interactMode = false;
+            // True whenever the in-iframe selection overlay must stand down.
+            function passthrough() { return navigateMode || interactMode; }
+
+            let interactionMode = 'select';
+            let canvasPanDragging = false;
+            function cleanupCanvasPanDrag() {
+                if (!canvasPanDragging) return;
+                canvasPanDragging = false;
+                document.removeEventListener('mousemove', onCanvasPanMove, true);
+                document.removeEventListener('mouseup', onCanvasPanUp, true);
+            }
+            function onCanvasPanMove(e) {
+                window.parent.postMessage({ type: 'fw-annotation-canvas-pan-move', clientX: e.clientX, clientY: e.clientY }, '*');
+            }
+            function onCanvasPanUp() {
+                document.removeEventListener('mousemove', onCanvasPanMove, true);
+                document.removeEventListener('mouseup', onCanvasPanUp, true);
+                canvasPanDragging = false;
+                window.parent.postMessage({ type: 'fw-annotation-canvas-pan-end' }, '*');
+            }
+            window.addEventListener('message', (e) => {
+                if (e.data?.type === 'fw-annotation-set-mode') {
+                    navigateMode = e.data.mode === 'navigate';
+                    interactMode = e.data.mode === 'interact';
+                    interactionMode = e.data.mode || 'select';
+                    document.documentElement.style.cursor = passthrough() ? 'default' : 'crosshair';
+                } else if (e.data?.type === 'fw-annotation-canvas-pan-cancel') {
+                    cleanupCanvasPanDrag();
+                } else if (e.data?.type === 'fw-annotation-select-path') {
+                    // Programmatic re-selection (e.g. after a breakpoint re-render):
+                    // recompute the element's info in THIS document and emit a normal
+                    // click so the parent re-applies highlight/bubbles/inspector.
+                    try {
+                        const el = e.data.path && document.querySelector(e.data.path);
+                        if (el) {
+                            selectedEl = el;
+                            _lastSelR = null;
+                            _startRaf();
+                            window.parent.postMessage({ type: 'fw-annotation-click', element: buildClickInfo(el) }, '*');
+                        }
+                    } catch (err) {}
+                }
+            });
+            // Wheel over preview iframes never bubbles to the parent.
+            // Ctrl/Meta+wheel must be stopped here or the browser zooms the whole tab (notably in grid mode).
+            // Flow+focus (fwFlowPan): plain wheel also forwards to pan the canvas.
+            document.addEventListener('wheel', function(e) {
+                var fe = window.frameElement;
+                if (!fe) return;
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.parent.postMessage({
+                        type: 'fw-annotation-canvas-wheel',
+                        deltaX: e.deltaX, deltaY: e.deltaY,
+                        ctrlKey: e.ctrlKey, metaKey: e.metaKey,
+                        clientX: e.clientX, clientY: e.clientY
+                    }, '*');
+                    return;
+                }
+                if (fe.dataset.fwFlowPan !== '1') return;
+                if (passthrough()) return;
+                if (document.activeElement && document.activeElement.contentEditable === 'true') return;
+                e.preventDefault();
+                e.stopPropagation();
+                window.parent.postMessage({
+                    type: 'fw-annotation-canvas-wheel',
+                    deltaX: e.deltaX, deltaY: e.deltaY,
+                    ctrlKey: e.ctrlKey, metaKey: e.metaKey,
+                    clientX: e.clientX, clientY: e.clientY
+                }, '*');
+            }, { passive: false, capture: true });
+            // Hand tool / middle mouse: drag to pan canvas (same as outside iframe)
+            document.addEventListener('mousedown', function(e) {
+                var fe = window.frameElement;
+                if (!fe || fe.dataset.fwFlowPan !== '1') return;
+                if (passthrough()) return;
+                if (document.activeElement && document.activeElement.contentEditable === 'true') return;
+                var hand = interactionMode === 'hand';
+                if (e.button !== 1 && !(e.button === 0 && hand)) return;
+                e.preventDefault();
+                e.stopPropagation();
+                canvasPanDragging = true;
+                document.addEventListener('mousemove', onCanvasPanMove, true);
+                document.addEventListener('mouseup', onCanvasPanUp, true);
+                window.parent.postMessage({ type: 'fw-annotation-canvas-pan-start', clientX: e.clientX, clientY: e.clientY }, '*');
+            }, true);
+
+            function getDomPath(el) {
+                var parts = [];
+                while (el && el !== document.documentElement) {
+                    var selector = el.tagName.toLowerCase();
+                    // Use ID shortcut only if the ID looks stable (not a
+                    // dynamic hash like swiper-wrapper-84cf7713ad9ef353).
+                    if (el.id && !/[0-9a-f]{8,}/i.test(el.id)) {
+                        selector += '#' + el.id;
+                        parts.unshift(selector);
+                        break;
+                    }
+                    var parent = el.parentElement;
+                    if (parent) {
+                        var siblings = Array.from(parent.children).filter(function(c) { return c.tagName === el.tagName; });
+                        if (siblings.length > 1) {
+                            selector += ':nth-of-type(' + (siblings.indexOf(el) + 1) + ')';
+                        }
+                    }
+                    parts.unshift(selector);
+                    el = parent;
+                }
+                return parts.join(' > ');
+            }
+
+            function getSVGShapeInfo(el) {
+                const tag = el.tagName.toLowerCase();
+                try {
+                    if (tag === 'circle' || tag === 'ellipse') return { type: 'ellipse' };
+                    if (tag === 'rect') {
+                        const rx = parseFloat(el.getAttribute('rx') || el.getAttribute('ry') || '0');
+                        const ry = parseFloat(el.getAttribute('ry') || el.getAttribute('rx') || '0');
+                        if (rx > 0 || ry > 0) {
+                            const bb = el.getBBox();
+                            if (bb.width && bb.height) return { type: 'rounded-rect', rxPct: rx / bb.width * 100, ryPct: ry / bb.height * 100 };
+                        }
+                        return null;
+                    }
+                    if (tag === 'path' || tag === 'polygon' || tag === 'polyline') {
+                        const ctm = el.getScreenCTM();
+                        if (!ctm) return null;
+                        const attr = tag === 'path' ? el.getAttribute('d') : el.getAttribute('points');
+                        if (!attr) return null;
+                        return { type: tag, attr, ctm: { a: ctm.a, b: ctm.b, c: ctm.c, d: ctm.d, e: ctm.e, f: ctm.f } };
+                    }
+                } catch {}
+                return null;
+            }
+
+            function getCSSClipShape(el, rect) {
+                try {
+                    const cp = window.getComputedStyle(el).clipPath;
+                    if (!cp || cp === 'none') return null;
+
+                    if (/^(circle|ellipse)\(/.test(cp)) return { type: 'ellipse' };
+
+                    if (cp.startsWith('polygon(')) {
+                        const m = cp.match(/polygon\(([^)]+)\)/);
+                        if (!m) return null;
+                        const pts = m[1].split(',').map(pt => {
+                            const parts = pt.trim().split(/\s+/);
+                            const xs = parts[0], ys = parts[1];
+                            const x = parseFloat(xs) * (xs.includes('%') ? rect.width / 100 : 1);
+                            const y = parseFloat(ys) * (ys.includes('%') ? rect.height / 100 : 1);
+                            return [rect.left + x, rect.top + y];
+                        });
+                        return { type: 'css-polygon', pts };
+                    }
+
+                    if (cp.startsWith('inset(')) {
+                        const roundM = cp.match(/round\s+([\w\s%]+)\)/);
+                        if (roundM) return { type: 'css-inset', borderRadius: roundM[1].trim() };
+                    }
+                } catch {}
+                return null;
+            }
+
+            function getElementInfo(el) {
+                const rect = el.getBoundingClientRect();
+                const classes = Array.from(el.classList).filter(c => !c.startsWith('fw-')).join(', ');
+                const tag = el.tagName.toLowerCase();
+                const isSvgEl = el.namespaceURI === 'http://www.w3.org/2000/svg';
+                let borderRadius = null, svgShape = null, cssClipShape = null;
+                if (isSvgEl) {
+                    svgShape = getSVGShapeInfo(el);
+                } else {
+                    const cs = window.getComputedStyle(el);
+                    borderRadius = {
+                        tl: cs.borderTopLeftRadius,
+                        tr: cs.borderTopRightRadius,
+                        br: cs.borderBottomRightRadius,
+                        bl: cs.borderBottomLeftRadius,
+                    };
+                    cssClipShape = getCSSClipShape(el, rect);
+                }
+                return {
+                    tag, classes,
+                    dims: Math.round(rect.width) + ' x ' + Math.round(rect.height),
+                    path: getDomPath(el),
+                    rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+                    childCount: el.children.length,
+                    textPreview: (el.textContent || '').trim().substring(0, 80),
+                    borderRadius,
+                    svgShape,
+                    cssClipShape,
+                };
+            }
+
+            function getClassTokens(el) {
+                return Array.from(el.classList || []).filter(c => !c.startsWith('fw-'));
+            }
+
+            function getDirectChildSignature(el) {
+                return Array.from(el.children || [])
+                    .slice(0, 8)
+                    .map(child => child.tagName.toLowerCase())
+                    .join('|');
+            }
+
+            function getElementPath(root, node) {
+                const path = [];
+                let current = node;
+                while (current && current !== root) {
+                    const parent = current.parentElement;
+                    if (!parent) return null;
+                    const index = Array.from(parent.children).indexOf(current);
+                    if (index < 0) return null;
+                    path.unshift(index);
+                    current = parent;
+                }
+                return path;
+            }
+
+            function getNodeByPath(root, path) {
+                let current = root;
+                for (const index of path || []) {
+                    current = current?.children?.[index] || null;
+                    if (!current) return null;
+                }
+                return current;
+            }
+
+            function buildRelativeSelector(path) {
+                if (!path || path.length === 0) return '';
+                return path.map(index => '> *:nth-child(' + (index + 1) + ')').join(' ');
+            }
+
+            function inferPeriod(signatures) {
+                for (let period = 1; period <= signatures.length; period++) {
+                    let valid = true;
+                    for (let i = 0; i < signatures.length; i++) {
+                        if (signatures[i] !== signatures[i % period]) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (valid) return period;
+                }
+                return signatures.length;
+            }
+
+            function extractVariantStyleMap(el) {
+                const computed = window.getComputedStyle(el);
+                const props = [
+                    'background-color', 'color', 'order', 'flex-direction',
+                    'grid-column', 'grid-row', 'grid-column-start', 'grid-column-end',
+                    'grid-row-start', 'grid-row-end', 'justify-self', 'align-self', 'opacity'
+                ];
+                const map = {};
+                for (const prop of props) {
+                    const value = computed.getPropertyValue(prop).trim();
+                    if (value) map[prop] = value;
+                }
+                for (let i = 0; i < computed.length; i++) {
+                    const name = computed[i];
+                    if (!name || !name.startsWith('--')) continue;
+                    const value = computed.getPropertyValue(name).trim();
+                    if (value) map[name] = value;
+                }
+                return map;
+            }
+
+            function collectVariantNodes(root) {
+                return [root, ...Array.from(root.querySelectorAll('*')).filter(node =>
+                    node.classList?.length || node.getAttribute('style')
+                )];
+            }
+
+            function buildStyleVariants(selectedEl, siblings) {
+                const ordered = siblings.slice(0, 6);
+                if (ordered.length < 2) return null;
+                const selectedIndex = ordered.indexOf(selectedEl);
+                if (selectedIndex < 0) return null;
+
+                const baseNodes = collectVariantNodes(ordered[0]);
+                const rules = [];
+                for (const baseNode of baseNodes) {
+                    const path = getElementPath(ordered[0], baseNode);
+                    if (path == null) continue;
+                    const siblingNodes = ordered.map(item => getNodeByPath(item, path));
+                    if (siblingNodes.some(node => !node)) continue;
+
+                    const styleMaps = siblingNodes.map(node => extractVariantStyleMap(node));
+                    const propNames = new Set(styleMaps.flatMap(map => Object.keys(map)));
+                    const differingProps = Array.from(propNames).filter(prop => {
+                        const values = styleMaps.map(map => (map[prop] || '').trim());
+                        return new Set(values).size > 1;
+                    });
+                    if (differingProps.length === 0) continue;
+
+                    const signatures = styleMaps.map(map => JSON.stringify(
+                        Object.fromEntries(differingProps.map(prop => [prop, (map[prop] || '').trim()]))
+                    ));
+                    const period = inferPeriod(signatures);
+                    if (period <= 1) continue;
+
+                    const selectedSignature = signatures[selectedIndex];
+                    for (let offset = 0; offset < period; offset++) {
+                        const index = signatures.findIndex((_, i) => i % period === offset);
+                        if (index < 0 || signatures[index] === selectedSignature) continue;
+                        const declarations = differingProps
+                            .map(prop => {
+                                const value = (styleMaps[index][prop] || '').trim();
+                                if (value) return { property: prop, value };
+                                const selectedValue = (styleMaps[selectedIndex][prop] || '').trim();
+                                return selectedValue ? { property: prop, value: 'initial' } : null;
+                            })
+                            .filter(Boolean);
+                        if (declarations.length === 0) continue;
+                        rules.push({
+                            selector: buildRelativeSelector(path),
+                            pattern: period + 'n+' + (offset + 1),
+                            declarations
+                        });
+                    }
+                }
+
+                return rules.length ? { rules } : null;
+            }
+
+            function getDescendantCount(el) {
+                try { return el.querySelectorAll('*').length; } catch { return 0; }
+            }
+
+            function computeSiblingSimilarity(base, candidate) {
+                if (!candidate || candidate.tagName !== base.tagName) return 0;
+                const baseClasses = getClassTokens(base);
+                const candidateClasses = getClassTokens(candidate);
+                const classOverlap = baseClasses.length && candidateClasses.length
+                    ? baseClasses.filter(cls => candidateClasses.includes(cls)).length / Math.max(baseClasses.length, candidateClasses.length)
+                    : 0;
+                const sameChildSignature = getDirectChildSignature(base) === getDirectChildSignature(candidate);
+                const childCountDelta = Math.abs((base.children?.length || 0) - (candidate.children?.length || 0));
+                let score = 0;
+                if (sameChildSignature) score += 0.55;
+                score += Math.min(classOverlap, 0.35);
+                if (childCountDelta <= 1) score += 0.1;
+                return score;
+            }
+
+            function getSiblingInfo(el) {
+                const parent = el.parentElement;
+                if (!parent) return null;
+                const siblings = Array.from(parent.children).filter(c => c.tagName === el.tagName);
+                if (siblings.length <= 1) return null;
+                const matching = siblings.filter(s => computeSiblingSimilarity(el, s) >= 0.55);
+                if (matching.length <= 1) return null;
+
+                const fields = [];
+                for (const child of el.querySelectorAll('*')) {
+                    const childTag = child.tagName.toLowerCase();
+                    const childClasses = Array.from(child.classList).join(' ');
+                    if (childTag === 'img') fields.push({ tag: childTag, classes: childClasses, suggestedType: 'Image', suggestedName: childClasses || 'image' });
+                    else if (['h1','h2','h3','h4','h5','h6'].includes(childTag)) fields.push({ tag: childTag, classes: childClasses, suggestedType: 'PlainText', suggestedName: childClasses || 'title' });
+                    else if (childTag === 'p' && child.textContent.trim().length > 20) fields.push({ tag: childTag, classes: childClasses, suggestedType: 'RichText', suggestedName: childClasses || 'description' });
+                    else if (childTag === 'a') fields.push({ tag: childTag, classes: childClasses, suggestedType: 'Link', suggestedName: childClasses || 'link' });
+                    else if (childTag === 'time' || child.getAttribute('datetime')) fields.push({ tag: childTag, classes: childClasses, suggestedType: 'Date', suggestedName: childClasses || 'date' });
+                }
+                return {
+                    totalSiblings: siblings.length,
+                    matchingSiblings: matching.length,
+                    fields,
+                    styleVariants: buildStyleVariants(el, matching)
+                };
+            }
+
+            function suggestComponentName(el) {
+                const classes = getClassTokens(el);
+                return classes[0] || el.tagName.toLowerCase();
+            }
+
+            function getComponentCandidate(el, siblingInfo) {
+                const classes = getClassTokens(el);
+                const tag = el.tagName.toLowerCase();
+                const descendantCount = getDescendantCount(el);
+                const reasons = [];
+                let score = 0;
+
+                if (['nav', 'header', 'footer', 'section', 'article', 'aside', 'form'].includes(tag)) {
+                    score += 3;
+                    reasons.push('semantic container');
+                }
+                if (classes.some(c => /nav|menu|header|hero|footer|card|modal|dialog|tabs|accordion|pricing|testimonial|cta/i.test(c))) {
+                    score += 3;
+                    reasons.push('component-like classes');
+                }
+                if ((el.children?.length || 0) >= 2 && descendantCount >= 4) {
+                    score += 2;
+                    reasons.push('multi-element structure');
+                }
+                if (siblingInfo?.matchingSiblings > 1) {
+                    score += 1;
+                    reasons.push('repeated pattern');
+                }
+
+                return {
+                    isCandidate: score >= 4,
+                    score,
+                    reasons,
+                    suggestedName: suggestComponentName(el)
+                };
+            }
+
+            // Live position tracking — follows animated elements, layout shifts, transitions.
+            // Uses separate fw-annotation-reposition message so the main doc only repositions
+            // without triggering the full hover/click side-effect chain.
+            var _raf = null, _lastSelR = null, _lastHovR = null;
+
+            function _posInfo(el) {
+                var r = el.getBoundingClientRect();
+                var isSvg = el.namespaceURI === 'http://www.w3.org/2000/svg';
+                var br = null, svg = null, clip = null;
+                if (isSvg) {
+                    svg = getSVGShapeInfo(el);
+                } else {
+                    var cs = window.getComputedStyle(el);
+                    br = { tl: cs.borderTopLeftRadius, tr: cs.borderTopRightRadius, br: cs.borderBottomRightRadius, bl: cs.borderBottomLeftRadius };
+                    clip = getCSSClipShape(el, r);
+                }
+                return { rect: { top: r.top, left: r.left, width: r.width, height: r.height }, scroll: { x: window.scrollX, y: window.scrollY }, borderRadius: br, svgShape: svg, cssClipShape: clip };
+            }
+
+            function _rEq(a, b) {
+                return a && b && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height;
+            }
+
+            function _startRaf() {
+                if (_raf) return;
+                function tick() {
+                    if (!selectedEl && !lastHovered) { _raf = null; return; }
+                    if (selectedEl) {
+                        var p = _posInfo(selectedEl);
+                        if (!_rEq(_lastSelR, p.rect)) {
+                            _lastSelR = p.rect;
+                            window.parent.postMessage({ type: 'fw-annotation-reposition', element: p, target: 'select' }, '*');
+                        }
+                    }
+                    if (lastHovered) {
+                        var p2 = _posInfo(lastHovered);
+                        if (!_rEq(_lastHovR, p2.rect)) {
+                            _lastHovR = p2.rect;
+                            window.parent.postMessage({ type: 'fw-annotation-reposition', element: p2, target: 'hover' }, '*');
+                        }
+                    }
+                    _raf = requestAnimationFrame(tick);
+                }
+                _raf = requestAnimationFrame(tick);
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                if (passthrough()) {
+                    if (lastHovered) { window.parent.postMessage({ type: 'fw-annotation-hover', element: null }, '*'); lastHovered = null; }
+                    return;
+                }
+                const el = document.elementFromPoint(e.clientX, e.clientY);
+                if (!el || el === document.body || el === document.documentElement || el.closest('.fw-ab')) {
+                    if (lastHovered) { window.parent.postMessage({ type: 'fw-annotation-hover', element: null }, '*'); lastHovered = null; }
+                    return;
+                }
+                if (el === lastHovered) return;
+                lastHovered = el;
+                _lastHovR = null;
+                const info = getElementInfo(el);
+                info.scroll = { x: window.scrollX, y: window.scrollY };
+                window.parent.postMessage({ type: 'fw-annotation-hover', element: info }, '*');
+                _startRaf();
+            });
+
+            document.addEventListener('scroll', () => {
+                if (lastHovered) {
+                    const info = getElementInfo(lastHovered);
+                    info.scroll = { x: window.scrollX, y: window.scrollY };
+                    window.parent.postMessage({ type: 'fw-annotation-hover', element: info }, '*');
+                }
+                if (selectedEl) {
+                    const info = getElementInfo(selectedEl);
+                    info.scroll = { x: window.scrollX, y: window.scrollY };
+                    window.parent.postMessage({ type: 'fw-annotation-scroll', element: info }, '*');
+                }
+            }, { passive: true });
+
+            // Build the full selection payload for an element — identical to what a
+            // real click produces. Shared by the click handler and programmatic
+            // re-selection (fw-annotation-select-path, e.g. after a breakpoint change).
+            function buildClickInfo(el) {
+                const info = getElementInfo(el);
+                info.scroll = { x: window.scrollX, y: window.scrollY };
+                info.siblingInfo = getSiblingInfo(el);
+                info.componentCandidate = getComponentCandidate(el, info.siblingInfo);
+                const ancestors = [];
+                let parent = el.parentElement;
+                while (parent && parent !== document.documentElement) {
+                    const pInfo = getElementInfo(parent);
+                    pInfo.scroll = { x: window.scrollX, y: window.scrollY };
+                    ancestors.push(pInfo);
+                    parent = parent.parentElement;
+                }
+                info.ancestors = ancestors;
+                return info;
+            }
+
+            document.addEventListener('click', (e) => {
+                if (interactMode) {
+                    // Let the click reach the page's own handlers (buttons, modal
+                    // toggles, sliders). Only block real internal-link navigation so
+                    // the artboard never swaps pages out from under the editor.
+                    const link = e.target.closest('a');
+                    if (link) {
+                        const href = link.getAttribute('href') || '';
+                        const inert = href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:');
+                        if (!inert) e.preventDefault(); // block navigation, but let JS handlers run
+                    }
+                    return;
+                }
+                if (navigateMode) {
+                    const link = e.target.closest('a');
+                    if (link) {
+                        e.preventDefault(); e.stopPropagation();
+                        let href = link.getAttribute('href') || '';
+                        if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+                        window.parent.postMessage({ type: 'fw-annotation-navigate', href }, '*');
+                    }
+                    return;
+                }
+                e.preventDefault(); e.stopPropagation();
+                const el = document.elementFromPoint(e.clientX, e.clientY);
+                if (!el || el === document.body || el === document.documentElement) return;
+
+                // Check if clicking a badge
+                const badge = el.closest('.fw-ab');
+                if (badge && badge.dataset.fwPath) {
+                    window.parent.postMessage({ type: 'fw-annotation-badge-click', path: badge.dataset.fwPath }, '*');
+                    return;
+                }
+
+                selectedEl = el;
+                _lastSelR = null;
+                _startRaf();
+                window.parent.postMessage({ type: 'fw-annotation-click', element: buildClickInfo(el) }, '*');
+            }, true);
+
+            // Double-click: enable inline text editing
+            let _editOldText = '';
+            document.addEventListener('dblclick', (e) => {
+                if (passthrough()) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const el = e.target;
+                const editableTags = ['H1','H2','H3','H4','H5','H6','P','SPAN','A','LI','LABEL','BUTTON','TD','TH','FIGCAPTION'];
+                if (editableTags.includes(el.tagName)) {
+                    _editOldText = el.textContent;
+                    el.contentEditable = 'true';
+                    el.focus();
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }, true);
+
+            // Blur: save text edit — send path + old/new so parent can resolve a real DOM node (selectedElement is not a node)
+            document.addEventListener('focusout', (e) => {
+                if (e.target.contentEditable === 'true') {
+                    const newText = e.target.textContent;
+                    e.target.contentEditable = 'false';
+                    window.parent.postMessage({
+                        type: 'fw-annotation-dirty',
+                        editType: 'text',
+                        oldText: _editOldText,
+                        newText: newText,
+                        tagName: e.target.tagName,
+                        path: getDomPath(e.target)
+                    }, '*');
+                    _editOldText = '';
+                }
+            });
+
+            // Key forwarding to parent
+            document.addEventListener('keydown', (e) => {
+                var ctrlOrMeta = e.ctrlKey || e.metaKey;
+                var notEditing = document.activeElement?.contentEditable !== 'true';
+
+                // Ctrl+Z / Ctrl+Shift+Z: forward undo/redo to parent
+                if (ctrlOrMeta && (e.key === 'z' || e.key === 'Z') && notEditing) {
+                    e.preventDefault();
+                    window.parent.postMessage({ type: 'fw-annotation-key', key: 'z', down: true, ctrl: true, shift: e.shiftKey }, '*');
+                    return;
+                }
+
+                // Ctrl+C: forward to parent for element conversion
+                if (ctrlOrMeta && e.key === 'c') {
+                    if (notEditing) {
+                        e.preventDefault();
+                        window.parent.postMessage({ type: 'fw-annotation-key', key: 'c', down: true, ctrl: true }, '*');
+                        return;
+                    }
+                }
+
+                if (e.key === 'Escape') {
+                    if (document.activeElement?.contentEditable === 'true') {
+                        document.activeElement.blur();
+                        return;
+                    }
+                    window.parent.postMessage({ type: 'fw-annotation-escape' }, '*');
+                }
+                // Space: forward for hand tool
+                if (e.key === ' ') {
+                    if (notEditing) {
+                        e.preventDefault();
+                        window.parent.postMessage({ type: 'fw-annotation-key', key: ' ', down: true }, '*');
+                    }
+                }
+                // Single-key tool shortcuts — forward when not editing text
+                if (!ctrlOrMeta && notEditing && e.key.length === 1) {
+                    var k = e.key.toLowerCase();
+                    if ('vhzeclkxdtspq?'.indexOf(k) !== -1) {
+                        window.parent.postMessage({ type: 'fw-annotation-key', key: k, down: true, ctrl: false, shift: e.shiftKey }, '*');
+                    }
+                }
+            });
+            document.addEventListener('keyup', (e) => {
+                if (e.key === ' ') {
+                    window.parent.postMessage({ type: 'fw-annotation-key', key: ' ', down: false }, '*');
+                }
+            });
+        })();
+        </script><script>document.addEventListener("wheel",function(e){if(e.ctrlKey||e.metaKey)e.preventDefault()},{passive:false})</script>
+
+</body></html>
